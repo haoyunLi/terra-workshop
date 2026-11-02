@@ -1,0 +1,41 @@
+{
+  "name": "terra-workshop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "泰拉工坊 · Windows 原版 Terraria 实时物品编辑器",
+  "main": "electron/live-main.cjs",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --configLoader native",
+    "build": "vite build --configLoader native",
+    "test": "node --test --test-isolation=none tests/*.test.mjs",
+    "start": "electron .",
+    "package": "node scripts/package.mjs",
+    "restore:bridge": "pwsh -NoProfile -File scripts/restore-tools.ps1",
+    "build:bridge": "pwsh -NoProfile -File scripts/build-bridge.ps1",
+    "test:live": "pwsh -NoProfile -File scripts/test-live.ps1"
+  },
+  "dependencies": {
+    "lucide-react": "^1.66.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^45.2.1",
+    "vite": "^8.3.5"
+  },
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=24"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/haoyunLi/terra-workshop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/haoyunLi/terra-workshop/issues"
+  },
+  "homepage": "https://github.com/haoyunLi/terra-workshop#readme"
+}
