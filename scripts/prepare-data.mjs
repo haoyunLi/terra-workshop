@@ -1,0 +1,48 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const read = p => JSON.parse(fs.readFileSync(p, 'utf8'));
+const root = path.resolve('..');
+const tdir = path.join(root, 'tedit/src/TEdit.Terraria/Data');
+const wdir = path.join(root, 'item-reference/web/public');
+const wiki = read(path.join(wdir,'data/items.json'));
+const raw = read(path.join(root,'plr-library/data/items.json'));
+const tedit = read(path.join(tdir,'items.json'));
+const zh = read(path.join(tdir,'Localization/zh-Hans.json'));
+const en = read(path.join(tdir,'Localization/en-US.json'));
+const sprites = read(path.join(wdir,'data/sprites.json'));
+const td = new Map(tedit.map(i => [i.id,i]));
+const categories = {weapon:'武器',tool:'工具',armor:'装备',accessory:'饰品','crafting-material':'材料',block:'建筑',wall:'建筑',furniture:'建筑',potion:'消耗品',food:'消耗品',ammo:'弹药',mount:'坐骑',pet:'宠物','light-pet':'宠物',dye:'染料'};
+const damageNames = {melee:'近战',ranged:'远程',magic:'魔法',summon:'召唤',throwing:'投掷',generic:'通用'};
+const obtainNames = {crafted:'合成制作',drop:'敌怪掉落',plunder:'探索与宝箱',purchased:'商店购买',shimmer:'微光转化',fished:'钓鱼获得',fishing:'钓鱼获得',found:'探索获得',harvested:'采集获得',mined:'挖掘获得',caught:'捕捉获得',extractinator:'提炼机',quest:'任务奖励',reward:'奖励',starting:'初始物品',transformed:'转化获得'};
+const knownDescriptions = {Zenith:'由多把传奇宝剑汇聚而成的终极近战武器。挥动时释放剑群，攻击光标附近的敌人。',TerraBlade:'发射绿色剑气的强力近战武器，是天顶剑的合成材料之一。',Meowmere:'发射会弹跳的猫咪弹射物，留下彩虹轨迹。',LastPrism:'持续引导多道光束，汇聚后造成强大的魔法伤害。',RodofDiscord:'将角色传送到光标位置。连续使用会受到混沌状态的影响。',RodOfHarmony:'将角色传送到光标位置，不施加混沌状态。',MagicMirror:'使用后返回角色的出生点，是探索与撤离时的常用工具。',CellPhone:'汇集多种信息显示功能，并可传送回出生点。',Shellphone:'整合信息显示与多种传送目的地的便利工具。',BottomlessBucket:'可反复倾倒水的水桶，无需重新装水。',VoidBag:'与虚空保险库联动，为探索提供额外的便携储物空间。'};
+const items=[];
+for(let id=1;id<=6195;id++){
+  const t=td.get(id); const r=raw[id]||{};
+  const key=t?.key||r.internalName||wiki.find(x=>x.id===id)?.key;
+  const candidates=wiki.filter(x=>x.id===id);
+  const w=candidates.find(x=>x.key===key)||candidates.find(x=>x.platforms?.includes('desktop'))||candidates[0];
+  const same=w?.key===key;
+  const name=zh.items[key]||t?.name||w?.name||r.name||key;
+  const english=en.items[key]||t?.name||w?.name||r.name||key;
+  const cats=same?w.categories||[]:[];
+  let category=cats.map(c=>categories[c]).find(Boolean)||(r.accessory?'饰品':r.pick||r.axe||r.hammer?'工具':r.damage?'武器':t?.createTile>=0||r.createTile>=0?'建筑':r.material?'材料':r.consumable?'消耗品':'其他');
+  // Preserve the game's item identity even where the wiki has platform-specific ID collisions.
+  let iconName=(same?w.icon?.split('/images/')[1]:null)||english.replaceAll(' ','_')+'.png';
+  let sprite=sprites.icons[iconName];
+  const stats={damage:w?.damage??r.damage,damageType:damageNames[w?.damageType]||(r.melee?'近战':r.ranged?'远程':r.magic?'魔法':r.summon?'召唤':''),defense:w?.defense??r.defense,critical:w?.critical,knockback:w?.knockback??r.knockBack,mana:w?.mana??r.mana,pickaxePower:w?.pickaxePower??r.pick,axePower:w?.axePower??(r.axe?r.axe*5:0),hammerPower:w?.hammerPower??r.hammer};
+  for(const k of Object.keys(stats)) if(stats[k]===undefined||stats[k]===0||stats[k]==='')delete stats[k];
+  const obtain=same?[...new Set((w.obtain||[]).map(o=>obtainNames[o]).filter(Boolean))]:[];
+  const special=!w||!same;
+  const desc=knownDescriptions[key]||`${name}属于${category}类物品。${stats.damage?`基础${stats.damageType||''}伤害 ${stats.damage}。`:''}${stats.defense?`提供 ${stats.defense} 点防御。`:''}${obtain.length?`常见获取方式：${obtain.join('、')}。`:''}${special?'此 ID 属于历史物品、即时拾取物或内部物品；游戏可能在加载时将其转换或移除。':''}`;
+  items.push({id,key,name,english,category,rarity:w?.rarity??r.rare??0,maxStack:t?.maxStackSize||w?.stack||r.maxStack||9999,research:w?.research||r.sacrifices||1,introduced:same?w.introduced:undefined,hardmode:!!w?.hardmode,unobtainable:!!w?.unobtainable||special,stats,obtain,description:desc,sprite:sprite||null,iconName,search:`${name} ${english} ${key} ${id}`.toLowerCase()});
+}
+const recipes=read(path.join(wdir,'data/recipes.json'));
+const prefixes=read(path.join(tdir,'prefixes.json')).map(p=>({id:p.id||0,name:p.id?(zh.prefixes[p.key]||p.name.trim()):'无词缀',key:p.key||'None'}));
+const versions=read(path.join(tdir,'versions.json'));
+fs.mkdirSync('public/data',{recursive:true});fs.mkdirSync('public/icons',{recursive:true});
+for(const sheet of sprites.sheets)fs.copyFileSync(path.join(wdir,sheet.file),path.join('public',sheet.file));
+fs.writeFileSync('public/data/game.json',JSON.stringify({items,prefixes,sheets:sprites.sheets,versions:versions.gameVersionToSaveVersion,saveVersions:versions.saveVersions}));
+fs.writeFileSync('public/data/recipes.json',JSON.stringify(recipes));
+const missing=items.filter(x=>!x.sprite);
+fs.writeFileSync('../missing-icons.json',JSON.stringify(missing,null,2));
+console.log(JSON.stringify({items:items.length,chinese:items.filter(i=>i.name!==i.english).length,sprites:items.length-missing.length,missing:missing.map(i=>[i.id,i.key,i.iconName]),recipeSample:recipes[0]},null,2));
