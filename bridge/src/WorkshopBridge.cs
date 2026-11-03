@@ -80,7 +80,7 @@ namespace TerraWorkshop {
       var logs=Environment.GetEnvironmentVariable("TERRA_WORKSHOP_LOGS");if(!string.IsNullOrEmpty(logs)){var serverLogs=Path.Combine(logs,"server");Directory.CreateDirectory(serverLogs);info.EnvironmentVariables["TERRA_WORKSHOP_LOGS"]=serverLogs;}
     }
   }
-  public static class Bridge {
+  public static partial class Bridge {
     public const string Protocol="terra-workshop-live/1";
     private static TcpListener listener;
     private static volatile bool running;
@@ -121,7 +121,7 @@ namespace TerraWorkshop {
       string auth;headers.TryGetValue("Authorization",out auth);if(headers.ContainsKey("Origin")||!Authorized(auth)){Reply(stream,403,Serialize(R.Dict("ok",false,"error","未授权的本机请求")));return;}
       string host;if(!headers.TryGetValue("Host",out host)||!(host.StartsWith("127.0.0.1:")||host.StartsWith("localhost:"))||headers.ContainsKey("Transfer-Encoding")){Reply(stream,400,"{}");return;}
       string action;var args=new Dictionary<string,object>();
-      if(request[0]=="GET"&&request[1]=="/status")action="state";
+      if(request[0]=="GET"&&request[1]=="/status"){action="state";string actor;if(IsServer&&headers.TryGetValue("X-Workshop-Actor",out actor))args["actor"]=actor;}
       else if(request[0]=="POST"&&request[1]=="/command"){
         string lengthText;int length;if(!headers.TryGetValue("Content-Length",out lengthText)||!int.TryParse(lengthText,out length)||length<2||length>65536){Reply(stream,413,"{}");return;}
         var bytes=new byte[length];int read=0;while(read<length){int n=stream.Read(bytes,read,length-read);if(n<=0)throw new IOException("Incomplete body");read+=n;}
@@ -129,10 +129,11 @@ namespace TerraWorkshop {
       }else{Reply(stream,404,"{}");return;}
       if(Interlocked.Increment(ref queueCount)>32){Interlocked.Decrement(ref queueCount);Reply(stream,429,Serialize(R.Dict("ok",false,"error","操作过于频繁，请稍后重试。")));return;}
       var job=new Job{Action=action,Args=args};jobs.Enqueue(job);
-      if(!job.Done.WaitOne(4500)){Interlocked.CompareExchange(ref job.State,2,0);Reply(stream,503,Serialize(R.Dict("ok",false,"error","游戏暂未处理操作，请返回游戏或等待加载完成。")));return;}
+      if(!job.Done.WaitOne(action=="saveGame"?30000:4500)){Interlocked.CompareExchange(ref job.State,2,0);Reply(stream,503,Serialize(R.Dict("ok",false,"error","游戏暂未处理操作，请返回游戏或等待加载完成。")));return;}
       Reply(stream,job.Error==null?200:400,job.Error==null?job.Result:Serialize(R.Dict("ok",false,"error",job.Error.Message)));
     }}catch{/* A malformed or closed request never executes game code. */}}}
     public static void Tick(){
+      AdventureTick();
       try{
         var m=MainType;bool inWorld=InWorld;if(!inWorld){godMode=infiniteMana=noFall=false;if(wasInWorld){lastUndo=null;npcCatalog=null;}wasInWorld=false;}else{wasInWorld=true;if(!IsServer){var p=Player();if(R.I(m,"netMode")!=2){if(godMode){R.TrySet(p,"statLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")));R.TrySet(p,"immune",true);R.TrySet(p,"immuneTime",60);R.TrySet(p,"immuneNoBlink",true);}if(infiniteMana)R.TrySet(p,"statMana",R.I(p,"statManaMax2",R.I(p,"statManaMax")));if(noFall){R.TrySet(p,"noFallDmg",true);R.TrySet(p,"fallStart",(int)(R.D(R.Get(p,"position"),"Y")/16));}}}}
       }catch{/* Menus and world transitions may temporarily have no player. */}
@@ -152,7 +153,7 @@ namespace TerraWorkshop {
     private static int ItemCount(){try{return R.I(R.T("Terraria.ID.ItemID"),"Count",6196);}catch{return 6196;}}
     private static object NewItem(int id,int stack,int prefix,bool favorite=false){
       if(id<0||id>=ItemCount())throw new InvalidOperationException("此游戏版本没有这个物品 ID。");
-      var i=Activator.CreateInstance(R.T("Terraria.Item"));if(id!=0){R.Call(i,"SetDefaults",id);if(R.I(i,"type")!=id)throw new InvalidOperationException("这是内部或旧版占位物品，游戏不允许直接放进背包。");if(prefix!=0){var ok=R.Call(i,"Prefix",prefix);if(ok is bool&&!(bool)ok)throw new InvalidOperationException("该物品不支持所选词缀，请更换词缀。");}R.Set(i,"stack",stack);R.TrySet(i,"favorited",favorite);}return i;
+      var i=Activator.CreateInstance(R.T("Terraria.Item"));if(id!=0){R.Call(i,"SetDefaults",id);if(R.I(i,"type")!=id)throw new InvalidOperationException("这是内部或旧版占位物品，游戏不允许直接放进背包。");if(R.I(MainType,"netMode")!=0&&stack>Math.Min(32767,Math.Max(1,R.I(i,"maxStack",9999))))throw new InvalidOperationException("多人模式单槽数量不能超过原生堆叠上限。");if(prefix!=0){var ok=R.Call(i,"Prefix",prefix);if(ok is bool&&!(bool)ok)throw new InvalidOperationException("该物品不支持所选词缀，请更换词缀。");}R.Set(i,"stack",stack);R.TrySet(i,"favorited",favorite);}return i;
     }
     private static Dictionary<string,Array> Arrays(object p){var groups=new Dictionary<string,Array>();foreach(var key in new[]{"inventory","armor","dye","miscEquips","miscDyes"}){var a=R.Get(p,key) as Array;if(a!=null)groups[key=="armor"?"equipment":key=="dye"?"dyes":key=="miscEquips"?"misc":key]=a;}foreach(var pair in new[]{new[]{"piggyBank","bank"},new[]{"safe","bank2"},new[]{"defendersForge","bank3"},new[]{"voidVault","bank4"}}){var bank=R.Get(p,pair[1]);var a=bank==null?null:R.Get(bank,"item") as Array;if(a!=null)groups[pair[0]]=a;}return groups;}
     private static object ItemInfo(object item){return R.Dict("id",R.I(item,"type"),"stack",R.I(item,"stack"),"prefix",R.I(item,"prefix"),"favorite",R.B(item,"favorited"));}
@@ -160,11 +161,11 @@ namespace TerraWorkshop {
     private static Dictionary<string,object> Inventory(object p){var all=Arrays(p);var d=new Dictionary<string,object>();foreach(var g in all)d[g.Key]=ItemList(g.Value,0,g.Key=="inventory"?50:-1);var inv=all["inventory"];d["coins"]=ItemList(inv,50,4);d["ammo"]=ItemList(inv,54,4);return d;}
     private static Array TargetArray(object p,string group,out int offset,out int length){var all=Arrays(p);offset=group=="coins"?50:group=="ammo"?54:0;if(offset>0){length=4;return all["inventory"];}Array a;if(!all.TryGetValue(group,out a))throw new InvalidOperationException("当前版本不支持这个仓储。");length=group=="inventory"?Math.Min(50,a.Length):a.Length;return a;}
     private static void Remember(object p){lastUndo=Inventory(p);undoPlayer=Convert.ToString(R.Get(p,"name"));undoWorld=Convert.ToString(R.Get(MainType,"worldID"));}
-    private static void Undo(object p){if(lastUndo==null||undoPlayer!=Convert.ToString(R.Get(p,"name"))||undoWorld!=Convert.ToString(R.Get(MainType,"worldID")))throw new InvalidOperationException("没有可撤销的背包修改。");var restore=lastUndo;lastUndo=null;foreach(var pair in restore){int offset,length;var a=TargetArray(p,pair.Key,out offset,out length);var values=(List<object>)pair.Value;for(int n=0;n<Math.Min(values.Count,length);n++){var i=(Dictionary<string,object>)values[n];a.SetValue(NewItem(Convert.ToInt32(i["id"]),Convert.ToInt32(i["stack"]),Convert.ToInt32(i["prefix"]),Convert.ToBoolean(i["favorite"])),n+offset);}}}
+    private static void Undo(object p){if(lastUndo==null||undoPlayer!=Convert.ToString(R.Get(p,"name"))||undoWorld!=Convert.ToString(R.Get(MainType,"worldID")))throw new InvalidOperationException("没有可撤销的背包修改。");var restore=lastUndo;lastUndo=null;foreach(var pair in restore){int offset,length;var a=TargetArray(p,pair.Key,out offset,out length);var values=(List<object>)pair.Value;for(int n=0;n<Math.Min(values.Count,length);n++){var i=(Dictionary<string,object>)values[n];a.SetValue(NewItem(Convert.ToInt32(i["id"]),Convert.ToInt32(i["stack"]),Convert.ToInt32(i["prefix"]),Convert.ToBoolean(i["favorite"])),n+offset);SyncSlot(pair.Key,n);}}}
     private static object Give(Dictionary<string,object> args){
       var p=Player();string group=Text(args,"group","inventory");if(!new[]{"inventory","piggyBank","safe","defendersForge","voidVault"}.Contains(group))throw new InvalidOperationException("请选择背包或仓储。");
       int id=Number(args,"type",0,1,ItemCount()-1),amount=Number(args,"stack",1,1,int.MaxValue),prefix=Number(args,"prefix",0,0,97);bool oversize=Bool(args,"oversize");
-      var sample=NewItem(id,1,prefix);int limit=oversize?int.MaxValue:Math.Max(1,R.I(sample,"maxStack",9999));int offset,length;var a=TargetArray(p,group,out offset,out length);long remaining=amount;var plan=new List<KeyValuePair<int,object>>();
+      var sample=NewItem(id,1,prefix);int limit=oversize&&R.I(MainType,"netMode")==0?int.MaxValue:Math.Max(1,R.I(sample,"maxStack",9999));int offset,length;var a=TargetArray(p,group,out offset,out length);long remaining=amount;var plan=new List<KeyValuePair<int,object>>();
       for(int n=0;n<length&&remaining>0;n++){var old=a.GetValue(n);int oldStack=R.I(old,"stack");if(R.I(old,"type")!=id||R.I(old,"prefix")!=prefix||oldStack>=limit)continue;int add=(int)Math.Min((long)limit-oldStack,remaining);plan.Add(new KeyValuePair<int,object>(n,NewItem(id,oldStack+add,prefix,R.B(old,"favorited"))));remaining-=add;}
       for(int n=0;n<length&&remaining>0;n++){var old=a.GetValue(n);if(R.I(old,"type")!=0&&R.I(old,"stack")>0)continue;int add=(int)Math.Min(limit,remaining);plan.Add(new KeyValuePair<int,object>(n,NewItem(id,add,prefix)));remaining-=add;}
       if(remaining>0)throw new InvalidOperationException("目标背包空间不足。请腾出空槽、切换仓储或减少数量。");Remember(p);foreach(var change in plan){a.SetValue(change.Value,change.Key);SyncSlot(group,change.Key);}string label=group=="inventory"?"主背包":group=="piggyBank"?"猪猪存钱罐":group=="safe"?"保险箱":group=="defendersForge"?"护卫熔炉":"虚空保险库";return R.Dict("message","物品已实时放入"+label,"quantity",amount,"type",id);
@@ -182,22 +183,23 @@ namespace TerraWorkshop {
         index=Convert.ToInt32(R.Call(R.T("Terraria.NPC"),"NewNPC",source,(int)R.D(pos,"X")+64,(int)R.D(pos,"Y"),type));
         if(index<0||index>=all.Length)throw new InvalidOperationException("世界 NPC 数量已满。");npc=all.GetValue(index);R.TrySet(npc,"homeless",true);R.TrySet(npc,"netUpdate",true);
         if(Bool(args,"findHome",true)&&R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"))R.Call(R.T("Terraria.WorldGen"),"QuickFindHome",index);
-        Send(23,index);return R.Dict("message",R.B(npc,"homeless")?"居民已出现，目前没有找到合格空房。":"居民已出现并安排住房。","index",index);
+        Send(23,index);SendHousing(index,npc);return R.Dict("message",R.B(npc,"homeless")?"居民已出现，目前没有找到合格空房。":"居民已出现并安排住房。","index",index);
       }
       index=NpcByIndex(args,out npc);
       if(action=="moveNpc"){var np=R.Get(npc,"position");R.Set(npc,"position",R.Vec(np,(float)R.D(pos,"X")+64,(float)R.D(pos,"Y")));R.TrySet(npc,"netUpdate",true);Send(23,index);return R.Dict("message","居民已移动到角色附近。");}
-      if(action=="healNpc"){R.Set(npc,"life",R.I(npc,"lifeMax"));return R.Dict("message","居民生命已恢复。");}
-      if(action=="findHome"){R.Call(R.T("Terraria.WorldGen"),"QuickFindHome",index);return R.Dict("message",R.B(npc,"homeless")?"未找到合格的空房，请先建造住房。":"已安排合格住房。");}
+      if(action=="healNpc"){R.Set(npc,"life",R.I(npc,"lifeMax"));Send(23,index);return R.Dict("message","居民生命已恢复。");}
+      if(action=="findHome"){R.Call(R.T("Terraria.WorldGen"),"QuickFindHome",index);SendHousing(index,npc);return R.Dict("message",R.B(npc,"homeless")?"未找到合格的空房，请先建造住房。":"已安排合格住房。");}
       if(action=="houseNpc"){
         int x=Number(args,"x",(int)(R.D(pos,"X")/16),10,R.I(m,"maxTilesX",8400)-10),y=Number(args,"y",(int)(R.D(pos,"Y")/16),10,R.I(m,"maxTilesY",2400)-10);
         var world=R.T("Terraria.WorldGen");if(!R.Method(world,"MoveTownNPC"))throw new InvalidOperationException("此游戏版本未提供住房分配接口。");
         bool ok=Convert.ToBoolean(R.Call(world,"MoveTownNPC",x,y,index));if(!ok||R.B(npc,"homeless"))throw new InvalidOperationException("这里不是适合该居民的空房。请站进合格的房间，或检查墙、照明、桌椅与房间占用。");
-        Send(60,index);return R.Dict("message","已分配该房间，居民将按游戏规则回家。","homeX",R.I(npc,"homeTileX"),"homeY",R.I(npc,"homeTileY"));
+        SendHousing(index,npc);return R.Dict("message","已分配该房间，居民将按游戏规则回家。","homeX",R.I(npc,"homeTileX"),"homeY",R.I(npc,"homeTileY"));
       }
       throw new InvalidOperationException("未知居民操作。");
     }
     public static object Execute(string action,Dictionary<string,object> args){
       if(action=="state")return R.Dict("message","connected");RequireWorld();var p=Player();
+      object adventureResult;if(AdventureAction(action,args,out adventureResult))return adventureResult;
       if(new[]{"spawnNpc","moveNpc","healNpc","findHome","houseNpc","time","stopRain"}.Contains(action))RequireWorldControl();
       if(action=="give")return Give(args);
       if(action=="setSlot"){
@@ -207,18 +209,18 @@ namespace TerraWorkshop {
       }
       if(action=="removeItem"){int id=Number(args,"type",0,1,ItemCount()-1);Remember(p);int removed=0;foreach(var pair in Arrays(p))for(int n=0;n<pair.Value.Length;n++)if(R.I(pair.Value.GetValue(n),"type")==id){pair.Value.SetValue(NewItem(0,0,0),n);SyncSlot(pair.Key,n);removed++;}return R.Dict("message","已移除 "+removed+" 个槽位中的物品。");}
       if(action=="undoInventory"){Undo(p);return R.Dict("message","已撤销上一次背包修改。");}
-      if(action=="heal"){R.Set(p,"statLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")));R.Set(p,"statMana",R.I(p,"statManaMax2",R.I(p,"statManaMax")));return R.Dict("message","生命与魔力已恢复。");}
-      if(action=="maxStats"){R.Set(p,"statLifeMax",500);R.Set(p,"statManaMax",200);R.TrySet(p,"statLifeMax2",500);R.TrySet(p,"statManaMax2",200);R.Set(p,"statLife",500);R.Set(p,"statMana",200);return R.Dict("message","永久基础生命与魔力已设为 500 / 200。");}
+      if(action=="heal"){R.Set(p,"statLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")));R.Set(p,"statMana",R.I(p,"statManaMax2",R.I(p,"statManaMax")));SyncVitals();return R.Dict("message","生命与魔力已恢复。");}
+      if(action=="maxStats"){R.Set(p,"statLifeMax",500);R.Set(p,"statManaMax",200);R.TrySet(p,"statLifeMax2",500);R.TrySet(p,"statManaMax2",200);R.Set(p,"statLife",500);R.Set(p,"statMana",200);SyncVitals();return R.Dict("message","永久基础生命与魔力已设为 500 / 200。");}
       if(action=="ability"){
         string key=Text(args,"key");bool enabled=Bool(args,"enabled");if(key=="godMode")godMode=enabled;else if(key=="infiniteMana")infiniteMana=enabled;else if(key=="noFall")noFall=enabled;else throw new InvalidOperationException("未知能力。");
         if(!godMode){R.TrySet(p,"immune",false);R.TrySet(p,"immuneTime",0);R.TrySet(p,"immuneNoBlink",false);}return R.Dict("message",enabled?"能力已开启。":"能力已关闭。");
       }
       if(action=="buff"){int id=Number(args,"type",0,1,1000),seconds=Number(args,"seconds",600,1,86400);R.Call(p,"AddBuff",id,seconds*60,false);return R.Dict("message","增益已生效。");}
       if(action=="time"){string time=Text(args,"value");bool day=time=="dawn"||time=="noon";if(!new[]{"dawn","noon","dusk","midnight"}.Contains(time))throw new InvalidOperationException("时间选项无效。");R.Set(MainType,"dayTime",day);R.Set(MainType,"time",time=="noon"?27000.0:time=="midnight"?16200.0:0.0);Send(7);return R.Dict("message","世界时间已更新。");}
-      if(action=="stopRain"){if(R.Method(MainType,"StopRain"))R.Call(MainType,"StopRain");else{R.Set(MainType,"raining",false);R.TrySet(MainType,"rainTime",0);R.TrySet(MainType,"maxRaining",0f);}return R.Dict("message","降雨已停止。");}
+      if(action=="stopRain"){if(R.Method(MainType,"StopRain"))R.Call(MainType,"StopRain");else{R.Set(MainType,"raining",false);R.TrySet(MainType,"rainTime",0);R.TrySet(MainType,"maxRaining",0f);}Send(7);return R.Dict("message","降雨已停止。");}
       if(action=="returnHome"){
         int x=R.I(p,"SpawnX",-1),y=R.I(p,"SpawnY",-1);if(x<0||y<0){x=R.I(MainType,"spawnTileX");y=R.I(MainType,"spawnTileY");}
-        var pos=R.Get(p,"position");R.Call(p,"Teleport",R.Vec(pos,x*16f,y*16f-R.I(p,"height",42)),0,0);R.TrySet(p,"fallStart",y);return R.Dict("message","已返回出生点。");
+        var pos=R.Get(p,"position");R.Call(p,"Teleport",R.Vec(pos,x*16f,y*16f-R.I(p,"height",42)),0,0);R.TrySet(p,"fallStart",y);Send(13,R.I(MainType,"myPlayer"));return R.Dict("message","已返回出生点。");
       }
       if(action=="saveGame"){if(!IsServer){var file=R.Get(MainType,"ActivePlayerFileData");if(file==null)throw new InvalidOperationException("角色保存数据暂不可用，请等待游戏完成加载。");R.Call(R.T("Terraria.Player"),"SavePlayer",file,false,false);}if(IsServer||R.I(MainType,"netMode")==0)R.Call(R.T("Terraria.IO.WorldFile"),"SaveWorld");return R.Dict("message",IsServer?"本机房间已调用原生保存。":"角色已调用原生保存。");}
       if(new[]{"spawnNpc","moveNpc","healNpc","findHome","houseNpc"}.Contains(action))return NpcAction(action,args);
@@ -232,7 +234,7 @@ namespace TerraWorkshop {
       var player=R.Dict("name",Convert.ToString(R.Get(p,"name","冒险者")),"difficulty",R.I(p,"difficulty"),"version",Convert.ToString(R.Get(m,"versionNumber","")).Contains("1.4.4")?279:326,"playTime",0,"selectedLoadout",R.I(p,"CurrentLoadoutIndex"),"stats",R.Dict("life",R.I(p,"statLife"),"maxLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")),"mana",R.I(p,"statMana"),"maxMana",R.I(p,"statManaMax2",R.I(p,"statManaMax"))),"groups",Inventory(p),"dead",R.B(p,"dead"),"x",(int)(R.D(pos,"X")/16),"y",(int)(R.D(pos,"Y")/16),"flags",new Dictionary<string,object>(),"journey",new Dictionary<string,object>());
       state["player"]=player;state["world"]=R.Dict("name",Convert.ToString(R.Get(m,"worldName","")),"id",R.I(m,"worldID"),"day",R.B(m,"dayTime"),"time",R.D(m,"time"),"raining",R.B(m,"raining"),"hardmode",R.B(m,"hardMode"));
       state["npcs"]=ActiveNpcs();state["townCatalog"]=TownCatalog();
-      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));return state;
+      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));ExtendSnapshot(state,p);return state;
     }
   }
 }

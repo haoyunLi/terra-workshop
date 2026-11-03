@@ -4,10 +4,17 @@ const http=require('node:http');
 const crypto=require('node:crypto');
 const net=require('node:net');
 const {spawn,execFile}=require('node:child_process');
-const ACTIONS=new Set(['give','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
-const WORLD_ACTIONS=new Set(['spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
+const {ProfileStore}=require('./profile.cjs');
+const {BackupManager}=require('./backups.cjs');
+const ACTIONS=new Set(['give','giveBatch','refill','teleport','spawnBoss','event','spawnControl','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
+const WORLD_ACTIONS=new Set(['spawnBoss','event','spawnControl','spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
 class LiveClient{
-  constructor(app,dialog,window){this.app=app;this.dialog=dialog;this.window=window;this.settings=null;this.loading=null;this.starting=false;this.child=null;this.lastLaunchError='';}
+  constructor(app,dialog,window){this.app=app;this.dialog=dialog;this.window=window;this.settings=null;this.loading=null;this.starting=false;this.child=null;this.lastLaunchError='';this.operations=Promise.resolve();this.profile=new ProfileStore(app.getPath('userData'));this.backups=new BackupManager({folder:app.getPath('userData'),secret:async()=>(await this.load()).token,getState:()=>this.status(),saveGame:()=>this.executeCommand('saveGame'),isRunning:()=>this.gameRunning()});}
+  queue(operation){const result=this.operations.then(operation,operation);this.operations=result.catch(()=>{});return result;}
+  backupCreate(label){return this.queue(()=>this.backups.create(label));}
+  backupRestore(id){return this.queue(()=>this.backups.restore(id));}
+  async runQuick(id){const profile=await this.profile.load(),q=profile.quick.find(x=>x.id===id);if(!q)throw Error('快捷操作已删除。');return this.executeQuick(q);}
+  async executeQuick(q){const profile=await this.profile.load();if(q.action==='preset'){const p=profile.presets.find(p=>p.id===q.args.id);if(!p)throw Error('预设已删除。');return(await this.command('giveBatch',{items:p.items})).result;}if(q.action==='bookmark'){const b=profile.bookmarks.find(b=>b.id===q.args.id);if(!b)throw Error('书签已删除。');return(await this.command('teleport',{x:b.x,y:b.y,worldId:b.worldId})).result;}const args={...q.args};if(q.action==='ability'&&args.toggle){const state=await this.status();args.enabled=!state.abilities?.[args.key];delete args.toggle;}return(await this.command(q.action,args)).result;}
   async freePort(){return new Promise((resolve,reject)=>{const server=net.createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const port=server.address().port;server.close(()=>resolve(port));});});}
   async load(){if(this.settings)return this.settings;if(!this.loading)this.loading=this.initialize();try{return await this.loading;}finally{this.loading=null;}}
   async initialize(){
@@ -29,7 +36,7 @@ class LiveClient{
     const s=await this.load(),isStatus=action==='state';if(!isStatus&&!ACTIONS.has(action))throw Error('不支持的实时操作。');
     const body=isStatus?null:JSON.stringify({...args,action});if(body&&Buffer.byteLength(body)>65536)throw Error('操作内容过长。');
     return new Promise((resolve,reject)=>{
-      const req=http.request({hostname:'127.0.0.1',port:target==='server'?s.serverPort:s.port,path:isStatus?'/status':'/command',method:isStatus?'GET':'POST',headers:{Authorization:`Bearer ${s.token}`,...(body?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}:{})},timeout:target==='server'&&isStatus?1800:6500},res=>{
+      const req=http.request({hostname:'127.0.0.1',port:target==='server'?s.serverPort:s.port,path:isStatus?'/status':'/command',method:isStatus?'GET':'POST',headers:{Authorization:`Bearer ${s.token}`,...(Number.isInteger(args.actor)?{'X-Workshop-Actor':String(args.actor)}:{}),...(body?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}:{})},timeout:action==='saveGame'?35000:target==='server'&&isStatus?1800:6500},res=>{
         let length=0;const chunks=[];res.on('data',chunk=>{length+=chunk.length;if(length>2*1024*1024){req.destroy(Error('游戏响应过长。'));return;}chunks.push(chunk);});
         res.on('end',()=>{try{const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!value.ok)throw Error(value.error||'游戏未完成这次操作。');if(value.state?.protocol!=='terra-workshop-live/1'||target==='server'&&value.state.role!=='server')throw Error('连接组件身份校验失败。');resolve(value);}catch(error){reject(error);}});
       });
@@ -39,18 +46,21 @@ class LiveClient{
   async status(){
     let client;try{client=(await this.request('state')).state;}catch(error){return{connected:false,message:this.lastLaunchError||error.message,...await this.info()};}
     const state={connected:true,...client,serverConnected:false,worldControl:client.netMode===0};
-    if(client.netMode===1&&client.inWorld){try{const server=(await this.request('state',{},'server')).state;if(server.inWorld&&server.world?.id===client.world?.id){state.serverConnected=true;state.worldControl=true;state.world=server.world;state.npcs=server.npcs;state.townCatalog=server.townCatalog;state.capabilities={...client.capabilities,...server.capabilities};}}catch{}}
+    if(client.netMode===1&&client.inWorld){try{const server=(await this.request('state',{actor:client.localPlayerIndex},'server')).state;if(server.inWorld&&server.world?.id===client.world?.id){state.serverConnected=true;state.worldControl=true;for(const key of['world','npcs','townCatalog','bosses','bossCatalog','events','spawns'])state[key]=server[key];state.saves={...client.saves,world:server.saves?.world};state.capabilities={...client.capabilities,...server.capabilities};}}catch{}}
     return state;
   }
-  async command(action,args={}){
+  command(action,args={}){return this.queue(()=>this.executeCommand(action,args));}
+  async executeCommand(action,args={}){
     if(!ACTIONS.has(action))throw Error('不支持的实时操作。');const state=await this.status();if(!state.connected||!state.inWorld)throw Error('请先通过工坊启动游戏，并进入角色与世界。');
     const needsServer=state.netMode===1&&WORLD_ACTIONS.has(action);
     if(needsServer&&!state.serverConnected)throw Error('人物端已连接，本机房间主机尚未接入。下次从工坊启动游戏，再用「主持并开始」开房，NPC 与世界操作即可同步到你的房间。');
+    const profile=await this.profile.load();if(profile.autoBackup&&(action==='spawnBoss'||action==='event'&&args.key!=='stop'))await this.backups.create('自动备份 · '+action);
     const reply=await this.request(action,{...args,...(needsServer?{actor:state.localPlayerIndex}:{})},needsServer?'server':'client');
     if(action==='saveGame'&&state.netMode===1&&state.serverConnected){await this.request('saveGame',{actor:state.localPlayerIndex},'server');reply.result.message='角色与本机房间已调用原生保存。';}
     return{...reply,state:await this.status()};
   }
   async vanillaRunning(){return new Promise(resolve=>{execFile('tasklist.exe',['/FI','IMAGENAME eq Terraria.exe','/FO','CSV','/NH'],{windowsHide:true,timeout:3000},(error,stdout)=>resolve(!error&&/^"Terraria\.exe",/im.test(stdout)));});}
+  async gameRunning(){if((await this.status()).connected)return true;return new Promise((resolve,reject)=>{execFile('tasklist.exe',['/FO','CSV','/NH'],{windowsHide:true,timeout:5000},(error,stdout)=>{if(error)return reject(Error('无法检查游戏是否退出，已停止恢复。'));resolve(/^"(?:Terraria|TerrariaServer|WorkshopLauncher|WorkshopServerLauncher)\.exe",/im.test(stdout));});});}
   async launch(){
     if(this.starting)throw Error('游戏正在启动，请稍候。');const current=await this.status();if(current.connected)return{message:'游戏已连接。'};
     if(this.app.isPackaged&&await this.vanillaRunning())throw Error('检测到普通启动的泰拉瑞亚仍在运行。请先正常保存并退出，再从工坊点击「启动游戏」。你自己的多人存档也可以使用，在游戏里选择「主持并开始」即可。');

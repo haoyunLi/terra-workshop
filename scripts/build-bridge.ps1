@@ -18,7 +18,8 @@ $references = @('/r:System.dll','/r:System.Core.dll',"/r:$harmony","/r:$cecil")
 if ($LASTEXITCODE -ne 0) {throw 'Client launcher compilation failed.'}
 & $compiler /nologo /target:exe /main:TerraWorkshop.LauncherBootstrap /platform:anycpu32bitpreferred /optimize+ /langversion:latest "/out:$output/WorkshopServerLauncher.exe" @references @files
 if ($LASTEXITCODE -ne 0) {throw 'Server launcher compilation failed.'}
-& $compiler /nologo /target:library /platform:anycpu /optimize+ /langversion:latest "/out:$output/Mods/WorkshopBridge.dll" /r:System.dll /r:System.Core.dll /r:System.Web.Extensions.dll "/r:$harmony" (Join-Path $sourceRoot 'WorkshopBridge.cs')
+$bridgeFiles = @(Get-ChildItem -LiteralPath $sourceRoot -File -Filter '*.cs' | ForEach-Object {$_.FullName})
+& $compiler /nologo /target:library /platform:anycpu /optimize+ /langversion:latest "/out:$output/Mods/WorkshopBridge.dll" /r:System.dll /r:System.Core.dll /r:System.Web.Extensions.dll "/r:$harmony" @bridgeFiles
 if ($LASTEXITCODE -ne 0) {throw 'Bridge compilation failed.'}
 foreach ($file in (Get-ChildItem -LiteralPath $sourceRoot -File -Recurse)) {
     $relative = [IO.Path]::GetRelativePath($sourceRoot,$file.FullName)

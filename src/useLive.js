@@ -7,5 +7,6 @@ export function useLive(){
   const command=useCallback(async(action,args={})=>{if(!desktop)throw Error('请运行桌面 App 来连接游戏，当前是界面预览。');if(pending.current)throw Error('上一次操作正在处理中。');pending.current=true;setBusy(true);try{const reply=await window.terraDesktop.command(action,args);if(mounted.current)setState({connected:true,...reply.state});return reply.result;}finally{pending.current=false;if(mounted.current)setBusy(false);}},[desktop]);
   const choose=async()=>{if(!desktop)throw Error('请运行解压目录中的 TerraWorkshop.exe，再选择游戏安装目录。');const value=await window.terraDesktop.chooseGame();setInfo(value);return value;};
   const launch=async()=>{if(!desktop)throw Error('请运行桌面 App，点击「启动游戏」即可开始实时修改。');setBusy(true);try{const value=await window.terraDesktop.launchGame();setInfo(await window.terraDesktop.info());return value;}finally{setBusy(false);}};
-  return{state,info,desktop,busy,command,choose,launch};
+  const quickRun=async id=>{if(!window.terraDesktop?.runQuick)throw Error('请使用新版桌面 App。');if(pending.current)throw Error('上一次操作正在处理中。');pending.current=true;setBusy(true);try{const reply=await window.terraDesktop.runQuick(id);if(mounted.current)setState({connected:true,...reply.state});return reply.result;}finally{pending.current=false;if(mounted.current)setBusy(false);}};
+  return{state,info,desktop,busy,command,choose,launch,quickRun};
 }
