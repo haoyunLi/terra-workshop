@@ -1,0 +1,34 @@
+.storage-search-page {overflow: auto;}
+.storage-search-page .page-title {display: flex; justify-content: space-between; align-items: center; gap: 20px;}
+.storage-search-page .page-title > svg {color: #98cbb2; flex-shrink: 0;}
+.storage-search-page .page-title .eyebrow {color: #b8b08f; font-size: 9px; margin-bottom: 10px;}
+.storage-search-bar {display: flex; gap: 10px; margin-bottom: 24px;}
+.storage-search-bar .search {flex: 1; min-width: 0; margin: 0;}
+.storage-search-bar button {flex-shrink: 0; padding: 0 16px;}
+.storage-section {border: 1px solid #34464b; border-radius: 10px; background: #142127; margin-bottom: 18px; overflow: hidden;}
+.storage-section-head {display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px; background: #1c2b30; border-bottom: 1px solid #30434a;}
+.storage-section-head h3 {display: flex; align-items: center; gap: 8px; color: #d6e5dc; font-size: 13px; margin: 0;}
+.storage-section-head h3 > svg {color: #a7cab8;}
+.storage-section-head p {color: #829da5; font-size: 10px; margin: 7px 0 0; line-height: 1.6;}
+.storage-section-head select {max-width: 190px; padding: 8px; font-size: 11px;}
+.storage-section-head > button {font-size: 10px; flex-shrink: 0;}
+.storage-badge {font-size: 9px; font-weight: 400; color: #c6b68d; border: 1px solid #5b5c44; border-radius: 4px; padding: 3px 5px; margin-left: 4px;}
+.storage-result {display: grid; grid-template-columns: 44px minmax(125px, 1fr) minmax(170px, 1.25fr) auto; align-items: center; gap: 12px; padding: 13px 18px; border-bottom: 1px solid #293c43; content-visibility: auto; contain-intrinsic-size: auto 68px;}
+.storage-result:last-child {border-bottom: 0;}
+.storage-result:hover {background: #1b2c31;}
+.storage-item-icon {display: grid; place-items: center; background: #24343a; border: 1px solid #31494c; border-radius: 8px; width: 44px; height: 44px;}
+.storage-item-name, .storage-location {min-width: 0;}
+.storage-item-name strong {font-size: 12px; color: #dbe6de; display: block; overflow-wrap: anywhere;}
+.storage-item-name small, .storage-location small {display: block; font-size: 10px; color: #829da5; line-height: 1.65; margin-top: 5px;}
+.storage-item-name small b {font-weight: 500; color: #c6d8cd;}
+.storage-location > span {font-size: 11px; color: #b1c6c1; overflow-wrap: anywhere;}
+.storage-locate {font-size: 10px !important; padding: 7px 9px; white-space: nowrap;}
+.storage-readonly {font-size: 10px; color: #879d9b; text-align: right;}
+.storage-hint, .storage-footnote, .storage-inline-empty {color: #92a8ad; line-height: 1.8; font-size: 11px; padding: 17px 18px; margin: 0;}
+.storage-footnote {font-size: 10px; border-top: 1px solid #293c43; color: #7d999f;}
+.storage-more {margin: 14px auto; font-size: 11px !important;}
+.storage-empty {padding: 62px 20px; display: flex; align-items: center; flex-direction: column; text-align: center; color: #89a99f; border: 1px dashed #40554f; border-radius: 10px;}
+.storage-empty h3 {font-size: 15px; margin: 19px 0 10px; color: #c7d8ce;}
+.storage-empty p {color: #829ba3; font-size: 12px; line-height: 1.8;}
+@media (max-width: 1100px) {.storage-result {grid-template-columns: 44px minmax(100px, 1fr) auto; gap: 9px 12px;}.storage-location {grid-column: 2; grid-row: 2;}.storage-item-icon {grid-row: span 2;}.storage-locate, .storage-readonly {grid-column: 3; grid-row: span 2;}.storage-result {padding: 13px;}}
+@media (max-width: 760px) {.storage-search-bar {flex-direction: column;}.storage-search-bar button {padding: 12px;}.storage-section-head {align-items: flex-start; flex-direction: column;}.storage-section-head select {width: 100%; max-width: none;}.storage-search-page .page-title > svg {display: none;}}

@@ -7,8 +7,14 @@ $gameRoot = Join-Path $testRoot 'game'
 New-Item -ItemType Directory -Path (Join-Path $gameRoot 'Content') -Force | Out-Null
 [IO.File]::WriteAllBytes((Join-Path $gameRoot 'Content/PixelShader.xnb'),[byte[]]@(1,3,3,7))
 $compiler = Join-Path $appRoot '.work/tools/compiler/tasks/net472/csc.exe'
-& $compiler /nologo /target:winexe /platform:anycpu32bitpreferred /optimize+ "/out:$gameRoot/Terraria.exe" (Join-Path $appRoot 'tests/FakeTerraria.cs')
+$fixtureFiles = @(Get-ChildItem -LiteralPath (Join-Path $appRoot 'tests') -Filter 'Fake*.cs' | ForEach-Object { $_.FullName })
+& $compiler /nologo /target:winexe /platform:anycpu32bitpreferred /optimize+ "/out:$gameRoot/Terraria.exe" @fixtureFiles
 if ($LASTEXITCODE -ne 0) {throw 'Simulated fixture compilation failed.'}
 Push-Location $appRoot
-try {node tests/live.integration.mjs; if ($LASTEXITCODE -ne 0) {throw 'Live integration test failed.'}; node tests/adventure.integration.mjs; if ($LASTEXITCODE -ne 0) {throw 'Adventure integration test failed.'}}
+try {
+    foreach ($suite in @('live','adventure','qol')) {
+        node "tests/$suite.integration.mjs"
+        if ($LASTEXITCODE -ne 0) { throw "$suite integration test failed." }
+    }
+}
 finally {Pop-Location}

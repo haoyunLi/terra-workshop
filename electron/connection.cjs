@@ -6,8 +6,8 @@ const net=require('node:net');
 const {spawn,execFile}=require('node:child_process');
 const {ProfileStore}=require('./profile.cjs');
 const {BackupManager}=require('./backups.cjs');
-const ACTIONS=new Set(['give','giveBatch','refill','teleport','spawnBoss','event','spawnControl','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
-const WORLD_ACTIONS=new Set(['spawnBoss','event','spawnControl','spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
+const ACTIONS=new Set(['searchStorage','give','giveBatch','refill','teleport','spawnBoss','event','spawnControl','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
+const WORLD_ACTIONS=new Set(['searchStorage','spawnBoss','event','spawnControl','spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
 class LiveClient{
   constructor(app,dialog,window){this.app=app;this.dialog=dialog;this.window=window;this.settings=null;this.loading=null;this.starting=false;this.child=null;this.lastLaunchError='';this.operations=Promise.resolve();this.profile=new ProfileStore(app.getPath('userData'));this.backups=new BackupManager({folder:app.getPath('userData'),secret:async()=>(await this.load()).token,getState:()=>this.status(),saveGame:()=>this.executeCommand('saveGame'),isRunning:()=>this.gameRunning()});}
   queue(operation){const result=this.operations.then(operation,operation);this.operations=result.catch(()=>{});return result;}
@@ -46,7 +46,7 @@ class LiveClient{
   async status(){
     let client;try{client=(await this.request('state')).state;}catch(error){return{connected:false,message:this.lastLaunchError||error.message,...await this.info()};}
     const state={connected:true,...client,serverConnected:false,worldControl:client.netMode===0};
-    if(client.netMode===1&&client.inWorld){try{const server=(await this.request('state',{actor:client.localPlayerIndex},'server')).state;if(server.inWorld&&server.world?.id===client.world?.id){state.serverConnected=true;state.worldControl=true;for(const key of['world','npcs','townCatalog','bosses','bossCatalog','events','spawns'])state[key]=server[key];state.saves={...client.saves,world:server.saves?.world};state.capabilities={...client.capabilities,...server.capabilities};}}catch{}}
+    if(client.netMode===1&&client.inWorld){try{const server=(await this.request('state',{actor:client.localPlayerIndex},'server')).state;if(server.inWorld&&server.world?.id===client.world?.id){state.serverConnected=true;state.worldControl=true;for(const key of['world','npcs','townCatalog','bosses','bossCatalog','events','spawns','progress','residentConditions'])state[key]=server[key];state.saves={...client.saves,world:server.saves?.world};state.capabilities={...client.capabilities,...server.capabilities};}}catch{}}
     return state;
   }
   command(action,args={}){return this.queue(()=>this.executeCommand(action,args));}

@@ -17,7 +17,7 @@ async function makeWindow(){
     const saved=JSON.parse(fs.readFileSync(path.join(app.getPath('userData'),'window-preferences.json'),'utf8'));
     windowPreferences.alwaysOnTop=saved.alwaysOnTop===true;
   } catch {}
-  window=new BrowserWindow({width:1440,height:960,minWidth:860,minHeight:650,show:false,backgroundColor:'#101a20',title:'泰拉工坊 2.1 · Terraria 实时修改器',icon:path.join(__dirname,'../dist/workshop-icon.png'),alwaysOnTop:windowPreferences.alwaysOnTop,autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
+  window=new BrowserWindow({width:1440,height:960,minWidth:860,minHeight:650,show:false,backgroundColor:'#101a20',title:'泰拉工坊 2.2 · Terraria 实时修改器',icon:path.join(__dirname,'../dist/workshop-icon.png'),alwaysOnTop:windowPreferences.alwaysOnTop,autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
   window.once('ready-to-show',()=>window.show());
   live=new LiveClient(app,dialog,window);
   startupLog('Loading local profile');
@@ -28,7 +28,7 @@ async function makeWindow(){
   window.webContents.on('preload-error',(_event,_file,error)=>startupLog('Preload failed: '+error.message));
   window.webContents.on('render-process-gone',(_event,details)=>startupLog('Renderer exited: '+details.reason));
   window.webContents.on('did-fail-load',(_event,code,description)=>startupLog('Document load failed: '+code+' '+description));
-  window.webContents.setWindowOpenHandler(({url})=>{if(/^https:\/\/(terraria\.wiki\.gg|github\.com|docs\.tmodloader\.net)\//.test(url))shell.openExternal(url);return{action:'deny'};});
+  window.webContents.setWindowOpenHandler(({url})=>{if(/^https:\/\/(terraria\.wiki\.gg|github\.com|docs\.tmodloader\.net|creativecommons\.org)\//.test(url))shell.openExternal(url);return{action:'deny'};});
   window.webContents.on('will-navigate',(event,url)=>{if(url!==window.webContents.getURL())event.preventDefault();});
   window.webContents.session.setPermissionRequestHandler((_wc,_permission,callback)=>callback(false));
   await window.loadFile(path.join(__dirname,'../dist/index.html'));

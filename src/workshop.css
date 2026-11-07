@@ -313,3 +313,5 @@
   .workshop-v21 .pillar-sigil {height: 85px;}
   .workshop-v21 .pillar-content > button {font-size: 9px; gap: 5px;}
 }
+.slot-location-message{color:var(--mint,#81dbc4);padding:10px 14px;background:#18372f66;border:1px solid #72cdb044;border-radius:10px;font-size:12px;line-height:1.6}
+.inventory-slot.located{outline:2px solid var(--mint,#81dbc4);outline-offset:3px;box-shadow:0 0 20px #72cdb033}

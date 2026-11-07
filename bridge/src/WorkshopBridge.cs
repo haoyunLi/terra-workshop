@@ -199,6 +199,7 @@ namespace TerraWorkshop {
     }
     public static object Execute(string action,Dictionary<string,object> args){
       if(action=="state")return R.Dict("message","connected");RequireWorld();var p=Player();
+      object storageResult;if(TryStorageAction(action,args,out storageResult))return storageResult;
       object adventureResult;if(AdventureAction(action,args,out adventureResult))return adventureResult;
       if(new[]{"spawnNpc","moveNpc","healNpc","findHome","houseNpc","time","stopRain"}.Contains(action))RequireWorldControl();
       if(action=="give")return Give(args);
@@ -234,7 +235,7 @@ namespace TerraWorkshop {
       var player=R.Dict("name",Convert.ToString(R.Get(p,"name","冒险者")),"difficulty",R.I(p,"difficulty"),"version",Convert.ToString(R.Get(m,"versionNumber","")).Contains("1.4.4")?279:326,"playTime",0,"selectedLoadout",R.I(p,"CurrentLoadoutIndex"),"stats",R.Dict("life",R.I(p,"statLife"),"maxLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")),"mana",R.I(p,"statMana"),"maxMana",R.I(p,"statManaMax2",R.I(p,"statManaMax"))),"groups",Inventory(p),"dead",R.B(p,"dead"),"x",(int)(R.D(pos,"X")/16),"y",(int)(R.D(pos,"Y")/16),"flags",new Dictionary<string,object>(),"journey",new Dictionary<string,object>());
       state["player"]=player;state["world"]=R.Dict("name",Convert.ToString(R.Get(m,"worldName","")),"id",R.I(m,"worldID"),"day",R.B(m,"dayTime"),"time",R.D(m,"time"),"raining",R.B(m,"raining"),"hardmode",R.B(m,"hardMode"));
       state["npcs"]=ActiveNpcs();state["townCatalog"]=TownCatalog();
-      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));ExtendSnapshot(state,p);return state;
+      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));ExtendSnapshot(state,p);PopulateProgress(state);PopulateResidentConditions(state);PopulateStorageSnapshot(state,p);return state;
     }
   }
 }

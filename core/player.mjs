@@ -3,7 +3,7 @@
 const KEY = new TextEncoder().encode('h\0'+'3\0'+'y\0'+'_\0'+'g\0'+'U\0'+'y\0'+'Z\0');
 const encoder=new TextEncoder(),decoder=new TextDecoder('utf-8',{fatal:true});
 export const SUPPORTED=[269,270,271,272,273,274,275,276,277,278,279,315,316,317,318,319,325,326];
-export const GROUPS={inventory:'主背包',coins:'钱币',ammo:'弹药',equipment:'装备与时装',dyes:'装备染料',misc:'宠物与坐骑',piggyBank:'猪猪存钱罐',safe:'保险箱',defendersForge:'护卫熔炉',voidVault:'虚空保险库',loadout0:'备用配装 1',loadout1:'备用配装 2',loadout2:'备用配装 3'};
+export const GROUPS={inventory:'主背包',coins:'钱币',ammo:'弹药',equipment:'装备与时装',dyes:'装备染料',misc:'宠物与坐骑',miscDyes:'宠物与坐骑染料',piggyBank:'猪猪存钱罐',safe:'保险箱',defendersForge:'护卫熔炉',voidVault:'虚空保险库',loadout0:'备用配装 1',loadout1:'备用配装 2',loadout2:'备用配装 3'};
 class Reader{
   constructor(bytes){this.b=bytes;this.v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);this.p=0;}
   need(n){if(!Number.isInteger(n)||n<0||this.p+n>this.b.length)throw Error(`存档不完整（字节 ${this.p}）`);}
