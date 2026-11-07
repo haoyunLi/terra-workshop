@@ -12,7 +12,7 @@ $fixtureFiles = @(Get-ChildItem -LiteralPath (Join-Path $appRoot 'tests') -Filte
 if ($LASTEXITCODE -ne 0) {throw 'Simulated fixture compilation failed.'}
 Push-Location $appRoot
 try {
-    foreach ($suite in @('live','adventure','qol')) {
+    foreach ($suite in @('live','adventure','qol','warehouse-runner')) {
         node "tests/$suite.integration.mjs"
         if ($LASTEXITCODE -ne 0) { throw "$suite integration test failed." }
     }

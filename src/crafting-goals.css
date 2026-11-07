@@ -1,0 +1,93 @@
+.workshop-v21 .crafting-page{display:flex;flex-direction:column;gap:18px;padding:24px;min-width:0;color:#d5e1dc;}
+.workshop-v21 .crafting-intro{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:5px 3px;color:#aacfbf;}
+.workshop-v21 .crafting-intro h3{font-size:23px;font-weight:550;color:#edf3ed;margin:7px 0 9px;}
+.workshop-v21 .crafting-intro p{font-size:12px;color:#96aaaf;line-height:1.7;}
+.workshop-v21 .crafting-intro>svg{opacity:.65;margin-right:14px;}
+.workshop-v21 .crafting-layout{display:grid;grid-template-columns:235px minmax(0,1fr);border:1px solid #304047;border-radius:12px;background:#182127;overflow:hidden;}
+.workshop-v21 .crafting-sidebar{padding:17px 12px;background:#141e24;border-right:1px solid #304047;min-width:0;}
+.workshop-v21 .crafting-page h4{font-size:12px;font-weight:550;margin:0;display:flex;align-items:center;gap:7px;color:#cbded3;}
+.workshop-v21 .crafting-sidebar>h4{margin:23px 6px 12px;}
+.workshop-v21 .crafting-sidebar-heading{display:flex;justify-content:space-between;align-items:center;padding:0 6px 10px;}
+.workshop-v21 .crafting-sidebar-heading button{padding:5px;border:0;background:none;color:#9cbaa9;}
+.workshop-v21 .crafting-muted{font-size:10px;color:#8da1a5;line-height:1.7;}
+.workshop-v21 .crafting-sidebar-note{padding:9px 6px 6px;}
+.workshop-v21 .crafting-search{display:flex;align-items:center;gap:7px;background:#142026;border:1px solid #35454c;border-radius:7px;padding:0 9px;color:#8fa6aa;}
+.workshop-v21 .crafting-search:focus-within{border-color:#94e1bf;}
+.workshop-v21 .crafting-search input{width:100%;min-width:0;border:0;background:none;outline:0;box-shadow:none;padding:10px 0;font-size:11px;}
+.workshop-v21 .crafting-search-note{padding:9px 5px 6px;font-size:9px;}
+.workshop-v21 .crafting-saved,.workshop-v21 .crafting-results{display:flex;flex-direction:column;gap:3px;overflow-y:auto;scrollbar-width:thin;max-height:340px;}
+.workshop-v21 .crafting-results{max-height:540px;}
+.workshop-v21 .crafting-saved button,.workshop-v21 .crafting-results button{display:flex;gap:9px;text-align:left;justify-content:flex-start;padding:10px 7px;border-color:transparent;background:none;min-width:0;white-space:normal;}
+.workshop-v21 .crafting-saved button.selected,.workshop-v21 .crafting-results button.selected{background:#263731;border-color:#42604e;}
+.workshop-v21 .crafting-saved button>span:not(.sprite-wrap),.workshop-v21 .crafting-results button>span:not(.sprite-wrap){flex:1;min-width:0;font-size:11px;line-height:1.5;}
+.workshop-v21 .crafting-saved small,.workshop-v21 .crafting-results small{display:block;font-size:9px;color:#8aa19e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.workshop-v21 .crafting-main{padding:24px;min-width:0;}
+.workshop-v21 .crafting-target{display:flex;align-items:center;gap:18px;}
+.workshop-v21 .crafting-target>div{min-width:0;}
+.workshop-v21 .crafting-target h3{font-size:23px;font-weight:500;margin:6px 0 9px;color:#e2eae1;}
+.workshop-v21 .crafting-target p{font-size:10px;color:#92a9ac;line-height:1.7;max-width:670px;}
+.workshop-v21 .crafting-target-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:20px 0 14px;}
+.workshop-v21 .crafting-target-actions label{display:flex;align-items:center;gap:10px;font-size:11px;color:#b1c4bd;margin-right:7px;}
+.workshop-v21 .crafting-target-actions input{width:82px;padding:8px 10px;text-align:center;font-size:12px;}
+.workshop-v21 .crafting-target-actions button{font-size:11px;padding:8px 11px;}
+.workshop-v21 .crafting-target-actions .crafting-delete{padding:9px;color:#b89c95;}
+.workshop-v21 .crafting-notice{font-size:11px;color:#b6ddc3;line-height:1.7;margin-bottom:12px;}
+.workshop-v21 .crafting-inventory-note{background:#142127;border:1px solid #2d4046;border-radius:8px;padding:11px 13px;font-size:10px;color:#98b0b2;line-height:1.8;}
+.workshop-v21 .crafting-inventory-note p{display:flex;align-items:flex-start;gap:6px;}
+.workshop-v21 .crafting-inventory-note p svg{margin-top:2px;}
+.workshop-v21 .crafting-inventory-note label{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap;color:#b8c8c0;}
+.workshop-v21 .crafting-inventory-note small{display:block;color:#78949b;font-size:9px;margin-top:4px;padding-left:22px;}
+.workshop-v21 .crafting-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:18px 0;background:linear-gradient(115deg,#1b2d2e,#1b262c);border:1px solid #304047;border-radius:9px;}
+.workshop-v21 .crafting-metrics>div{padding:15px 17px;min-width:0;}
+.workshop-v21 .crafting-metrics>div+div{border-left:1px solid #304047;}
+.workshop-v21 .crafting-metrics span{display:block;font-size:10px;color:#9eb3ac;}
+.workshop-v21 .crafting-metrics strong{font-size:27px;font-weight:500;display:block;margin-top:6px;color:#dbefe1;}
+.workshop-v21 .crafting-metrics small{font-size:10px;color:#819b99;font-weight:400;}
+.workshop-v21 .crafting-plan-status,.workshop-v21 .crafting-callout{display:flex;align-items:flex-start;gap:8px;color:#c8bb98;background:#2c2e25;border:1px solid #494b3d;border-radius:7px;padding:11px 13px;font-size:11px;line-height:1.7;}
+.workshop-v21 .crafting-plan-status>svg,.workshop-v21 .crafting-callout>svg{margin-top:2px;}
+.workshop-v21 .crafting-plan-status.ready{color:#b5d6bc;background:#21312b;border-color:#3d5747;}
+.workshop-v21 .crafting-section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 0 12px;}
+.workshop-v21 .crafting-section-title>span{font-size:9px;color:#849ea4;}
+.workshop-v21 .crafting-tree{border:1px solid #304148;border-radius:9px;background:#152128;padding:7px 9px;max-height:690px;overflow:auto;scrollbar-width:thin;}
+.workshop-v21 .crafting-node{min-width:0;padding:7px 0;}
+.workshop-v21 .crafting-node+.crafting-node{border-top:1px solid #273b40;}
+.workshop-v21 .crafting-node-row{display:flex;gap:7px;align-items:center;min-width:0;}
+.workshop-v21 button.crafting-expand{border:0;background:none;padding:3px;min-width:21px;height:26px;color:#93b6a7;}
+.workshop-v21 button.crafting-expand:disabled{opacity:.2;}
+.workshop-v21 .crafting-node-info{flex:1;min-width:0;}
+.workshop-v21 .crafting-node-info b{font-size:11px;font-weight:500;line-height:1.7;overflow-wrap:anywhere;}
+.workshop-v21 .crafting-node-info em{font-size:10px;font-style:normal;color:#9fbcb1;margin-left:8px;white-space:nowrap;}
+.workshop-v21 .crafting-node-info p{display:flex;flex-wrap:wrap;gap:2px 9px;color:#879fa4;font-size:9px;line-height:1.6;}
+.workshop-v21 .crafting-node-info .owned{color:#a8d6b5;}
+.workshop-v21 .crafting-node-badge{font-size:9px;color:#95aaa8;white-space:nowrap;}
+.workshop-v21 .crafting-node-owned>.crafting-node-row>.crafting-node-badge{color:#a8d8b4;}
+.workshop-v21 .crafting-node-recipeChoice>.crafting-node-row>.crafting-node-badge,.workshop-v21 .crafting-node-groupChoice>.crafting-node-row>.crafting-node-badge,.workshop-v21 .crafting-node-cycle>.crafting-node-row>.crafting-node-badge{color:#d0b784;}
+.workshop-v21 .crafting-node-choice{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:9px 0 5px 28px;color:#94afa7;font-size:9px;}
+.workshop-v21 .crafting-node-choice select{width:100%;padding:7px;font-size:10px;color:#cadbd1;border-color:#3c514e;background:#1b2a2d;text-overflow:ellipsis;}
+.workshop-v21 .crafting-node-detail{margin:7px 5px 4px 29px;color:#c2ad85;font-size:9px;line-height:1.8;}
+.workshop-v21 .crafting-node-station{margin:5px 0 0 62px;color:#789b99;font-size:9px;line-height:1.7;}
+.workshop-v21 .crafting-node-children{margin:7px 0 0 10px;padding-left:9px;border-left:1px solid #375146;}
+.workshop-v21 .crafting-stations{margin-top:18px;border:1px solid #344747;border-radius:8px;padding:14px;background:#1b292c;}
+.workshop-v21 .crafting-stations>div{display:flex;gap:6px;flex-wrap:wrap;margin:11px 0;}
+.workshop-v21 .crafting-stations span{font-size:9px;padding:5px 7px;background:#243a35;color:#b2d0b8;border:1px solid #3a5645;border-radius:5px;}
+.workshop-v21 .crafting-stations p{font-size:10px;color:#98aaa4;line-height:1.8;}
+.workshop-v21 .crafting-next{margin-top:19px;}
+.workshop-v21 .crafting-next>p{font-size:10px;line-height:1.8;color:#96a9a9;margin:9px 0;}
+.workshop-v21 .crafting-next>a{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid #3b514a;background:#1d302c;border-radius:7px;padding:11px 13px;margin-top:7px;font-size:11px;color:#c0dec5;}
+.workshop-v21 .crafting-next small{display:block;font-size:9px;color:#93b3a2;line-height:1.8;}
+.workshop-v21 .crafting-missing-row{padding:13px;border:1px solid #304148;border-radius:8px;background:#1a272d;margin-top:8px;}
+.workshop-v21 .crafting-missing-title{display:flex;gap:11px;align-items:center;min-width:0;}
+.workshop-v21 .crafting-missing-title>div{flex:1;min-width:0;}
+.workshop-v21 .crafting-missing-title a{display:inline-flex;align-items:center;gap:5px;color:#d2e2d6;font-size:11px;}
+.workshop-v21 .crafting-missing-title p{font-size:9px;color:#8ca2a8;line-height:1.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;margin-top:4px;}
+.workshop-v21 .crafting-missing-title>b{font-size:12px;color:#d6bd91;white-space:nowrap;font-weight:500;}
+.workshop-v21 .crafting-source-list,.workshop-v21 .crafting-source-unknown{font-size:9px;line-height:1.9;color:#8ca3a9;margin-top:8px;padding-left:43px;}
+.workshop-v21 .crafting-source-list>div{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.workshop-v21 .crafting-source-list a{display:inline-flex;align-items:center;gap:4px;color:#a8cbb6;}
+.workshop-v21 .crafting-source-list p{width:100%;color:#c1b38e;}
+.workshop-v21 .crafting-empty{text-align:center;padding:25px 12px;font-size:11px;line-height:1.9;color:#91a7a7;}
+.workshop-v21 .crafting-footnotes{font-size:10px;line-height:1.9;color:#7e979f;padding:0 4px;}
+.workshop-v21 .crafting-footnotes p{margin:4px 0;}
+.workshop-v21 .crafting-footnotes a{color:#9bbdaf;}
+@media(max-width:1100px){.workshop-v21 .crafting-page{padding:18px;}.workshop-v21 .crafting-layout{grid-template-columns:205px minmax(0,1fr);}.workshop-v21 .crafting-main{padding:18px;}.workshop-v21 .crafting-metrics>div{padding:12px;}.workshop-v21 .crafting-target h3{font-size:21px;}.workshop-v21 .crafting-node-children{margin-left:6px;padding-left:6px;}}
+@media(max-width:850px){.workshop-v21 .crafting-layout{grid-template-columns:1fr;}.workshop-v21 .crafting-sidebar{border-right:0;border-bottom:1px solid #304047;}.workshop-v21 .crafting-results,.workshop-v21 .crafting-saved{max-height:190px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}.workshop-v21 .crafting-node-badge{font-size:8px;}.workshop-v21 .crafting-intro h3{font-size:20px;}.workshop-v21 .crafting-metrics strong{font-size:23px;}.workshop-v21 .crafting-metrics span{font-size:9px;}}

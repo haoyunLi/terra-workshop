@@ -17,7 +17,7 @@ async function makeWindow(){
     const saved=JSON.parse(fs.readFileSync(path.join(app.getPath('userData'),'window-preferences.json'),'utf8'));
     windowPreferences.alwaysOnTop=saved.alwaysOnTop===true;
   } catch {}
-  window=new BrowserWindow({width:1440,height:960,minWidth:860,minHeight:650,show:false,backgroundColor:'#101a20',title:'泰拉工坊 2.2 · Terraria 实时修改器',icon:path.join(__dirname,'../dist/workshop-icon.png'),alwaysOnTop:windowPreferences.alwaysOnTop,autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
+  window=new BrowserWindow({width:1440,height:960,minWidth:860,minHeight:650,show:false,backgroundColor:'#101a20',title:'泰拉工坊 2.3 · Terraria 实时修改器',icon:path.join(__dirname,'../dist/workshop-icon.png'),alwaysOnTop:windowPreferences.alwaysOnTop,autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
   window.once('ready-to-show',()=>window.show());
   live=new LiveClient(app,dialog,window);
   startupLog('Loading local profile');

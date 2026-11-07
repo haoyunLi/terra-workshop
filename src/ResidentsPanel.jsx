@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Check, ChevronDown, CircleHelp, Clock3, Gamepad2, Heart, Home, Info, MapPin, Navigation, Plus, Search, UserRound, Users, X } from 'lucide-react';
+import { Check, ChevronDown, CircleHelp, Clock3, Gamepad2, Heart, Home, Info, MapPin, Navigation, Plus, Search, Users, X } from 'lucide-react';
 import { Icon, Modal, Field } from './ui';
 import { residentMatchesFilter, residentReportFor, residentStatusLabels, residentTeleportArgs } from './residentModel.mjs';
 import './residents.css';
@@ -59,7 +59,7 @@ export default function ResidentsPanel({ live, run, game, onConnect }) {
       const visitor = [37, 368, 453].includes(n.id);
       return <article className="resident-card" key={n.id}>
         <div className="resident-card-main">
-          <div className="resident-portrait">{n.sprite || n.iconFile ? <Icon item={n} sheets={game.sheets} size={42}/> : <UserRound size={28}/>}</div>
+          <div className="resident-portrait"><Icon item={n} sheets={game.sheets} size={42}/></div>
           <div className="resident-info">
             <h3>{n.name}<span>#{n.id}</span></h3>
             <p>{current ? visitor ? '特殊访客 · 不使用普通住房' : current.homeless ? '已出现 · 等待住房' : `已入住 · 房间 ${current.homeX}, ${current.homeY}` : '当前世界未出现'}</p>

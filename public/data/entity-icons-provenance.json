@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "upstream": "https://github.com/Doeschi/Terraria-Progress-Tracker",
+  "sourceDataVersion": "2026-10-08",
+  "license": "CC BY-NC-SA 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+  "notes": [
+    "Coordinates reference existing bundled sprite sheets; no assets were extracted from an installed game.",
+    "Boss portraits use the upstream native map icons; the Twins portrait is Retinazer, matching the upstream boss list.",
+    "Pillars use their actual NPC thumbnail artwork. Town pet and Diva Slime mappings use upstream bestiary identities.",
+    "Animated source icons use the existing atlas first-frame image."
+  ],
+  "entries": [
+    {
+      "kind": "resident",
+      "key": "TownCat",
+      "npcId": 637,
+      "name": "猫咪",
+      "iconName": "Town_Cat.gif",
+      "sourceUrl": "https://terraria.wiki.gg/images/Town_Cat.gif",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Town_Cat"
+    },
+    {
+      "kind": "resident",
+      "key": "TownDog",
+      "npcId": 638,
+      "name": "狗狗",
+      "iconName": "Town_Dog.gif",
+      "sourceUrl": "https://terraria.wiki.gg/images/Town_Dog.gif",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Town_Dog"
+    },
+    {
+      "kind": "resident",
+      "key": "TownBunny",
+      "npcId": 656,
+      "name": "兔兔",
+      "iconName": "Town_Bunny.gif",
+      "sourceUrl": "https://terraria.wiki.gg/images/Town_Bunny.gif",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Town_Bunny"
+    },
+    {
+      "kind": "resident",
+      "key": "TownSlimeRainbow",
+      "npcId": 681,
+      "name": "天后史莱姆",
+      "iconName": "Diva_Slime.gif",
+      "sourceUrl": "https://terraria.wiki.gg/images/Diva_Slime.gif",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Diva_Slime"
+    },
+    {
+      "kind": "boss",
+      "key": "kingSlime",
+      "name": "史莱姆王",
+      "iconName": "Map_Icon_King_Slime.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_King_Slime.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/King_Slime"
+    },
+    {
+      "kind": "boss",
+      "key": "eye",
+      "name": "克苏鲁之眼",
+      "iconName": "Map_Icon_Eye_of_Cthulhu_%28first_form%29.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Eye_of_Cthulhu_%28first_form%29.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Eye_of_Cthulhu"
+    },
+    {
+      "kind": "boss",
+      "key": "eater",
+      "name": "世界吞噬怪",
+      "iconName": "Map_Icon_Eater_of_Worlds.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Eater_of_Worlds.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Eater_of_Worlds"
+    },
+    {
+      "kind": "boss",
+      "key": "brain",
+      "name": "克苏鲁之脑",
+      "iconName": "Map_Icon_Brain_of_Cthulhu.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Brain_of_Cthulhu.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Brain_of_Cthulhu"
+    },
+    {
+      "kind": "boss",
+      "key": "queenBee",
+      "name": "蜂王",
+      "iconName": "Map_Icon_Queen_Bee.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Queen_Bee.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Queen_Bee"
+    },
+    {
+      "kind": "boss",
+      "key": "skeletron",
+      "name": "骷髅王",
+      "iconName": "Map_Icon_Skeletron.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Skeletron.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Skeletron"
+    },
+    {
+      "kind": "boss",
+      "key": "deerclops",
+      "name": "独眼巨鹿",
+      "iconName": "Map_Icon_Deerclops.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Deerclops.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Deerclops"
+    },
+    {
+      "kind": "boss",
+      "key": "wall",
+      "name": "血肉墙",
+      "iconName": "Map_Icon_Wall_of_Flesh.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Wall_of_Flesh.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Wall_of_Flesh"
+    },
+    {
+      "kind": "boss",
+      "key": "queenSlime",
+      "name": "史莱姆皇后",
+      "iconName": "Map_Icon_Queen_Slime.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Queen_Slime.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Queen_Slime"
+    },
+    {
+      "kind": "boss",
+      "key": "twins",
+      "name": "双子魔眼",
+      "iconName": "Map_Icon_Retinazer_%28first_form%29.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Retinazer_%28first_form%29.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/The_Twins"
+    },
+    {
+      "kind": "boss",
+      "key": "destroyer",
+      "name": "毁灭者",
+      "iconName": "Map_Icon_The_Destroyer.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_The_Destroyer.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/The_Destroyer"
+    },
+    {
+      "kind": "boss",
+      "key": "prime",
+      "name": "机械骷髅王",
+      "iconName": "Map_Icon_Skeletron_Prime.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Skeletron_Prime.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Skeletron_Prime"
+    },
+    {
+      "kind": "boss",
+      "key": "plantera",
+      "name": "世纪之花",
+      "iconName": "Map_Icon_Plantera_%28first_form%29.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Plantera_%28first_form%29.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Plantera"
+    },
+    {
+      "kind": "boss",
+      "key": "golem",
+      "name": "石巨人",
+      "iconName": "Map_Icon_Golem.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Golem.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Golem"
+    },
+    {
+      "kind": "boss",
+      "key": "duke",
+      "name": "猪龙鱼公爵",
+      "iconName": "Map_Icon_Duke_Fishron.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Duke_Fishron.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Duke_Fishron"
+    },
+    {
+      "kind": "boss",
+      "key": "empress",
+      "name": "光之女皇",
+      "iconName": "Map_Icon_Empress_of_Light.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Empress_of_Light.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Empress_of_Light"
+    },
+    {
+      "kind": "boss",
+      "key": "cultist",
+      "name": "拜月教邪教徒",
+      "iconName": "Map_Icon_Lunatic_Cultist.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Lunatic_Cultist.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Lunatic_Cultist"
+    },
+    {
+      "kind": "boss",
+      "key": "moonLord",
+      "name": "月亮领主",
+      "iconName": "Map_Icon_Moon_Lord.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Map_Icon_Moon_Lord.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Moon_Lord"
+    },
+    {
+      "kind": "pillar",
+      "key": "solar",
+      "name": "日耀柱",
+      "iconName": "Solar_Pillar.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Solar_Pillar.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Celestial_Pillars"
+    },
+    {
+      "kind": "pillar",
+      "key": "vortex",
+      "name": "星旋柱",
+      "iconName": "Vortex_Pillar.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Vortex_Pillar.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Celestial_Pillars"
+    },
+    {
+      "kind": "pillar",
+      "key": "nebula",
+      "name": "星云柱",
+      "iconName": "Nebula_Pillar.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Nebula_Pillar.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Celestial_Pillars"
+    },
+    {
+      "kind": "pillar",
+      "key": "stardust",
+      "name": "星尘柱",
+      "iconName": "Stardust_Pillar.png",
+      "sourceUrl": "https://terraria.wiki.gg/images/Stardust_Pillar.png",
+      "pageUrl": "https://terraria.wiki.gg/wiki/Celestial_Pillars"
+    }
+  ]
+}

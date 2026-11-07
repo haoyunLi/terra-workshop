@@ -96,13 +96,13 @@ function CollectionView({ live, game, onError, scope, loot, allowedIds }) {
             const status = progressPresentation(byBoss.get(boss.key));
             const done = boss.drops.filter(drop => acquired(drop.id)).length;
             return <button key={boss.key} className={`progress-boss ${current?.key === boss.key ? 'selected' : ''}`} aria-pressed={current?.key === boss.key} onClick={() => { setSelected(boss.key); setItemQuery(''); }}>
-              <Icon item={byId.get(boss.item)} sheets={game.sheets} size={30}/><span><b>{boss.name}</b><small className={`progress-tone-${status.tone}`}>{status.text}</small></span><em>{scope ? done : '—'}<small>/{boss.drops.length}</small></em>
+              <Icon item={game.entityIcons?.[boss.key]} label={boss.name} sheets={game.sheets} size={30}/><span><b>{boss.name}</b><small className={`progress-tone-${status.tone}`}>{status.text}</small></span><em>{scope ? done : '—'}<small>/{boss.drops.length}</small></em>
             </button>;
           })}</div> : null;
         })}{!bosses.length ? <p className="progress-empty">没有匹配的挑战。</p> : null}</div>
       </aside>
       <div className="progress-detail">{current ? <>
-        <header className="progress-detail-title"><div><span className="eyebrow">LOOT COLLECTION</span><h3>{current.name}</h3><span className={`progress-badge progress-tone-${presentation.tone}`}>{presentation.tone === 'done' ? <CheckCircle2 size={13}/> : <Flag size={13}/>} {presentation.text}</span></div><Icon item={byId.get(current.item)} sheets={game.sheets} size={52}/></header>
+        <header className="progress-detail-title"><div><span className="eyebrow">LOOT COLLECTION</span><h3>{current.name}</h3><span className={`progress-badge progress-tone-${presentation.tone}`}>{presentation.tone === 'done' ? <CheckCircle2 size={13}/> : <Flag size={13}/>} {presentation.text}</span></div><Icon item={game.entityIcons?.[current.key]} label={current.name} sheets={game.sheets} size={52}/></header>
         <p className="progress-world-note">{record?.note || '世界进度尚未读取。你仍可以浏览收录的战利品。'}</p>
         <div className="progress-collection-meter"><span>{scope ? `${current.drops.filter(drop => acquired(drop.id)).length} / ${current.drops.length} 件已收集` : `${current.drops.length} 件收录战利品`}</span><a href={current.url} target="_blank" rel="noreferrer">首领 Wiki <ArrowUpRight size={13}/></a><div><i style={{ width: `${scope ? current.drops.filter(drop => acquired(drop.id)).length / Math.max(1, current.drops.length) * 100 : 0}%` }}/></div></div>
         <div className="progress-loot-toolbar"><label className="progress-search"><Search size={15}/><input aria-label="搜索当前挑战的战利品" value={itemQuery} placeholder="搜索这场挑战的战利品" onChange={event => setItemQuery(event.target.value)}/></label><select aria-label="筛选战利品" value={filter} onChange={event => setFilter(event.target.value)}><option value="all">全部战利品</option><option value="missing">尚未收集</option><option value="target">我的目标</option><option value="marked">手动标记</option></select></div>

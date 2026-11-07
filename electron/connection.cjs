@@ -6,8 +6,8 @@ const net=require('node:net');
 const {spawn,execFile}=require('node:child_process');
 const {ProfileStore}=require('./profile.cjs');
 const {BackupManager}=require('./backups.cjs');
-const ACTIONS=new Set(['searchStorage','give','giveBatch','refill','teleport','spawnBoss','event','spawnControl','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
-const WORLD_ACTIONS=new Set(['searchStorage','spawnBoss','event','spawnControl','spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
+const ACTIONS=new Set(['warehouseScan','warehousePreview','warehouseApply','warehouseUndo','searchStorage','give','giveBatch','refill','teleport','spawnBoss','event','spawnControl','setSlot','removeItem','undoInventory','heal','maxStats','ability','buff','time','stopRain','returnHome','saveGame','spawnNpc','moveNpc','healNpc','findHome','houseNpc']);
+const WORLD_ACTIONS=new Set(['warehouseScan','warehousePreview','warehouseApply','warehouseUndo','searchStorage','spawnBoss','event','spawnControl','spawnNpc','moveNpc','healNpc','findHome','houseNpc','time','stopRain']);
 class LiveClient{
   constructor(app,dialog,window){this.app=app;this.dialog=dialog;this.window=window;this.settings=null;this.loading=null;this.starting=false;this.child=null;this.lastLaunchError='';this.operations=Promise.resolve();this.profile=new ProfileStore(app.getPath('userData'));this.backups=new BackupManager({folder:app.getPath('userData'),secret:async()=>(await this.load()).token,getState:()=>this.status(),saveGame:()=>this.executeCommand('saveGame'),isRunning:()=>this.gameRunning()});}
   queue(operation){const result=this.operations.then(operation,operation);this.operations=result.catch(()=>{});return result;}
@@ -34,9 +34,9 @@ class LiveClient{
   }
   async request(action,args={},target='client'){
     const s=await this.load(),isStatus=action==='state';if(!isStatus&&!ACTIONS.has(action))throw Error('不支持的实时操作。');
-    const body=isStatus?null:JSON.stringify({...args,action});if(body&&Buffer.byteLength(body)>65536)throw Error('操作内容过长。');
+    const body=isStatus?null:JSON.stringify({...args,action});if(body&&Buffer.byteLength(body)>(action.startsWith('warehouse')?524288:65536))throw Error('操作内容过长。');
     return new Promise((resolve,reject)=>{
-      const req=http.request({hostname:'127.0.0.1',port:target==='server'?s.serverPort:s.port,path:isStatus?'/status':'/command',method:isStatus?'GET':'POST',headers:{Authorization:`Bearer ${s.token}`,...(Number.isInteger(args.actor)?{'X-Workshop-Actor':String(args.actor)}:{}),...(body?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}:{})},timeout:action==='saveGame'?35000:target==='server'&&isStatus?1800:6500},res=>{
+      const req=http.request({hostname:'127.0.0.1',port:target==='server'?s.serverPort:s.port,path:isStatus?'/status':'/command',method:isStatus?'GET':'POST',headers:{Authorization:`Bearer ${s.token}`,...(Number.isInteger(args.actor)?{'X-Workshop-Actor':String(args.actor)}:{}),...(body?{'Content-Type':'application/json','Content-Length':Buffer.byteLength(body)}:{})},timeout:action==='saveGame'||action.startsWith('warehouse')?35000:target==='server'&&isStatus?1800:6500},res=>{
         let length=0;const chunks=[];res.on('data',chunk=>{length+=chunk.length;if(length>2*1024*1024){req.destroy(Error('游戏响应过长。'));return;}chunks.push(chunk);});
         res.on('end',()=>{try{const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!value.ok)throw Error(value.error||'游戏未完成这次操作。');if(value.state?.protocol!=='terra-workshop-live/1'||target==='server'&&value.state.role!=='server')throw Error('连接组件身份校验失败。');resolve(value);}catch(error){reject(error);}});
       });
@@ -55,7 +55,10 @@ class LiveClient{
     const needsServer=state.netMode===1&&WORLD_ACTIONS.has(action);
     if(needsServer&&!state.serverConnected)throw Error('人物端已连接，本机房间主机尚未接入。下次从工坊启动游戏，再用「主持并开始」开房，NPC 与世界操作即可同步到你的房间。');
     const profile=await this.profile.load();if(profile.autoBackup&&(action==='spawnBoss'||action==='event'&&args.key!=='stop'))await this.backups.create('自动备份 · '+action);
+    let warehouseBackup=null;
+    if(action==='warehouseApply'){warehouseBackup=await this.backups.create('仓库整理前');if(!['player','world'].every(kind=>warehouseBackup.files.some(file=>file.kind===kind)))throw Error('仓库整理需要完整备份角色与世界；请先在游戏中将云端角色或世界移出 Steam 云端。');}
     const reply=await this.request(action,{...args,...(needsServer?{actor:state.localPlayerIndex}:{})},needsServer?'server':'client');
+    if(warehouseBackup){reply.result.backupId=warehouseBackup.id;reply.result.backupMessage='整理前的存档已备份，可在「存档备份」中恢复。';}
     if(action==='saveGame'&&state.netMode===1&&state.serverConnected){await this.request('saveGame',{actor:state.localPlayerIndex},'server');reply.result.message='角色与本机房间已调用原生保存。';}
     return{...reply,state:await this.status()};
   }

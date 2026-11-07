@@ -191,7 +191,7 @@
 .workshop-v21 .pillar-card.pillar-stardust {--pillar: #8ec6e9;}
 .workshop-v21 .pillar-art {position: relative; height: 135px; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--pillar) 14%,transparent),transparent 80%); overflow: hidden;}
 .workshop-v21 .pillar-art::after {content: ''; position: absolute; border: 1px solid color-mix(in srgb,var(--pillar) 18%,transparent); border-radius: 50%; width: 150px; height: 150px; top: 23px;}
-.workshop-v21 .pillar-sigil {color: var(--pillar); width: 70px; height: 100px; filter: drop-shadow(0 0 15px color-mix(in srgb,var(--pillar) 20%,transparent));}
+.workshop-v21 .pillar-portrait {position: relative; z-index: 1; display: flex; filter: drop-shadow(0 0 15px color-mix(in srgb,var(--pillar) 20%,transparent));}
 .workshop-v21 .pillar-fragment {position: absolute; top: 10px; right: 10px; opacity: .8;}
 .workshop-v21 .pillar-content {padding: 16px;}
 .workshop-v21 .pillar-heading {display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px;}

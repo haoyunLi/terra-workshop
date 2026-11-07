@@ -1,5 +1,5 @@
 import {useCallback,useEffect,useState} from 'react';
-const initial={version:2,presets:[],bookmarks:[],quick:[],hotkeysEnabled:false,autoBackup:false};
+const initial={version:2,presets:[],bookmarks:[],quick:[],warehouses:[],craftingGoals:[],hotkeysEnabled:false,autoBackup:false};
 export function useWorkshop({onError,onNotice}){
  const [config,setConfig]=useState({profile:initial,hotkeys:{registered:[],failed:[]}}),[ready,setReady]=useState(false);
  useEffect(()=>{let active=true;const api=window.terraDesktop;if(api?.getConfig)api.getConfig().then(v=>{if(active){setConfig(v);setReady(true);}}).catch(onError);else setReady(true);const stop=api?.onNotice?.(notice=>notice.kind==='error'?onError(Error(notice.message)):onNotice(notice.message));return()=>{active=false;stop?.();};},[]);

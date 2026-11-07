@@ -9,16 +9,6 @@ const pillars = [
   { key: 'stardust', name: '星尘柱', item: 3459, className: '召唤', description: '星尘碎片 · 群星的召唤力量' },
 ];
 
-function PillarSigil() {
-  return <svg className="pillar-sigil" viewBox="0 0 80 115" fill="none" aria-hidden="true">
-    <path d="M40 6 58 30 50 46H30L22 30 40 6Z" fill="currentColor" opacity=".14"/>
-    <path d="m40 6 18 24-8 16H30L22 30 40 6Zm0 0v40M22 30l18 8 18-8" stroke="currentColor" strokeWidth="1.5"/>
-    <path d="M28 52h24l5 8-6 8H29l-6-8 5-8Zm2 21h20v7H30v-7Zm0 12h20l-3 9H33l-3-9Zm3 14h14l-7 11-7-11Z" fill="currentColor" opacity=".7"/>
-    <path d="M15 53 8 61l7 9M65 53l7 8-7 9M9 30h7M64 30h7" stroke="currentColor" strokeWidth="1.5" opacity=".5"/>
-    <circle cx="40" cy="60" r="3" fill="#16282d"/>
-  </svg>;
-}
-
 function Meter({ label, value, maximum, known }) {
   const percent = maximum > 0 ? Math.max(0, Math.min(100, value / maximum * 100)) : 0;
   return <div className="pillar-meter"><div><span>{label}</span><strong>{known ? `${value.toLocaleString()} / ${maximum.toLocaleString()}` : '—'}</strong></div><div className="pillar-track"><i style={{ width: known ? `${percent}%` : '0%' }}/></div></div>;
@@ -48,7 +38,7 @@ export function LunarPillars({ live, game, run }) {
       const hasLocation = Number.isFinite(current?.x) && Number.isFinite(current?.y) && current?.maxLife > 0;
       const status = known ? current.shield > 0 ? '护盾保护中' : '护盾已解除' : current?.defeated ? '已击败' : '等待降临';
       return <article className={`pillar-card pillar-${definition.key}`} key={definition.key}>
-        <div className="pillar-art"><PillarSigil/><span className="pillar-fragment"><Icon item={game.items.find(item => item.id === definition.item)} sheets={game.sheets} size={27}/></span></div>
+        <div className="pillar-art"><span className="pillar-portrait"><Icon item={game.entityIcons?.[definition.key]} label={definition.name} sheets={game.sheets} size={100}/></span><span className="pillar-fragment"><Icon item={game.items.find(item => item.id === definition.item)} sheets={game.sheets} size={27}/></span></div>
         <div className="pillar-content"><div className="pillar-heading"><h3>{definition.name}</h3><span>{definition.className} · {status}</span></div><p>{definition.description}</p>
           <Meter label="剩余护盾" value={current?.shield || 0} maximum={current?.maxShield || 0} known={known}/>
           <Meter label="天界柱生命" value={current?.life || 0} maximum={current?.maxLife || 0} known={known}/>
@@ -57,7 +47,7 @@ export function LunarPillars({ live, game, run }) {
         </div>
       </article>;
     })}</div>
-    <div className="notice"><Shield size={17}/><p>击败对应区域的敌怪会削弱护盾，护盾归零后可攻击天界柱。四柱全部被击败后，原版游戏会继续召唤月亮领主。柱形图案为工坊设计，右上角展示对应碎片。</p></div>
+    <div className="notice"><Shield size={17}/><p>击败对应区域的敌怪会削弱护盾，护盾归零后可攻击天界柱。四柱全部被击败后，原版游戏会继续召唤月亮领主。卡片展示对应天界柱，右上角为掉落碎片。</p></div>
     <div className="notice"><Info size={17}/><p>开启后将保留原版世界进度，普通事件的「结束」按钮不会取消天界事件。传送会检查边界和方块碰撞，抵达后仍需应对附近敌怪。</p></div>
     {confirm ? <Modal title="开启天界四柱" onClose={() => setConfirm(false)}><p className="modal-body">将在当前世界同时生成日耀柱、星旋柱、星云柱和星尘柱，并开启原版天界事件。击败全部四柱会继续触发月亮领主。建议提前在「存档备份」中保留当前进度。</p><div className="modal-actions"><button onClick={() => setConfirm(false)}>取消</button><button className="primary" onClick={() => { setConfirm(false); run('event', { key: 'lunar' }); }}><Sparkles size={16}/>确认开启四柱</button></div></Modal> : null}
   </div>;

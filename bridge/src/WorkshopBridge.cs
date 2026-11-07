@@ -123,17 +123,18 @@ namespace TerraWorkshop {
       string action;var args=new Dictionary<string,object>();
       if(request[0]=="GET"&&request[1]=="/status"){action="state";string actor;if(IsServer&&headers.TryGetValue("X-Workshop-Actor",out actor))args["actor"]=actor;}
       else if(request[0]=="POST"&&request[1]=="/command"){
-        string lengthText;int length;if(!headers.TryGetValue("Content-Length",out lengthText)||!int.TryParse(lengthText,out length)||length<2||length>65536){Reply(stream,413,"{}");return;}
+        string lengthText;int length;if(!headers.TryGetValue("Content-Length",out lengthText)||!int.TryParse(lengthText,out length)||length<2||length>524288){Reply(stream,413,"{}");return;}
         var bytes=new byte[length];int read=0;while(read<length){int n=stream.Read(bytes,read,length-read);if(n<=0)throw new IOException("Incomplete body");read+=n;}
         args=Deserialize(Encoding.UTF8.GetString(bytes));action=Text(args,"action");
       }else{Reply(stream,404,"{}");return;}
       if(Interlocked.Increment(ref queueCount)>32){Interlocked.Decrement(ref queueCount);Reply(stream,429,Serialize(R.Dict("ok",false,"error","操作过于频繁，请稍后重试。")));return;}
       var job=new Job{Action=action,Args=args};jobs.Enqueue(job);
-      if(!job.Done.WaitOne(action=="saveGame"?30000:4500)){Interlocked.CompareExchange(ref job.State,2,0);Reply(stream,503,Serialize(R.Dict("ok",false,"error","游戏暂未处理操作，请返回游戏或等待加载完成。")));return;}
+      if(!job.Done.WaitOne(action=="saveGame"||action.StartsWith("warehouse",StringComparison.Ordinal)?30000:4500)){Interlocked.CompareExchange(ref job.State,2,0);Reply(stream,503,Serialize(R.Dict("ok",false,"error","游戏暂未处理操作，请返回游戏或等待加载完成。")));return;}
       Reply(stream,job.Error==null?200:400,job.Error==null?job.Result:Serialize(R.Dict("ok",false,"error",job.Error.Message)));
     }}catch{/* A malformed or closed request never executes game code. */}}}
     public static void Tick(){
       AdventureTick();
+      WarehouseTick();
       try{
         var m=MainType;bool inWorld=InWorld;if(!inWorld){godMode=infiniteMana=noFall=false;if(wasInWorld){lastUndo=null;npcCatalog=null;}wasInWorld=false;}else{wasInWorld=true;if(!IsServer){var p=Player();if(R.I(m,"netMode")!=2){if(godMode){R.TrySet(p,"statLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")));R.TrySet(p,"immune",true);R.TrySet(p,"immuneTime",60);R.TrySet(p,"immuneNoBlink",true);}if(infiniteMana)R.TrySet(p,"statMana",R.I(p,"statManaMax2",R.I(p,"statManaMax")));if(noFall){R.TrySet(p,"noFallDmg",true);R.TrySet(p,"fallStart",(int)(R.D(R.Get(p,"position"),"Y")/16));}}}}
       }catch{/* Menus and world transitions may temporarily have no player. */}
@@ -199,6 +200,7 @@ namespace TerraWorkshop {
     }
     public static object Execute(string action,Dictionary<string,object> args){
       if(action=="state")return R.Dict("message","connected");RequireWorld();var p=Player();
+      object warehouseResult;if(TryWarehouseAction(action,args,out warehouseResult))return warehouseResult;
       object storageResult;if(TryStorageAction(action,args,out storageResult))return storageResult;
       object adventureResult;if(AdventureAction(action,args,out adventureResult))return adventureResult;
       if(new[]{"spawnNpc","moveNpc","healNpc","findHome","houseNpc","time","stopRain"}.Contains(action))RequireWorldControl();
@@ -235,7 +237,7 @@ namespace TerraWorkshop {
       var player=R.Dict("name",Convert.ToString(R.Get(p,"name","冒险者")),"difficulty",R.I(p,"difficulty"),"version",Convert.ToString(R.Get(m,"versionNumber","")).Contains("1.4.4")?279:326,"playTime",0,"selectedLoadout",R.I(p,"CurrentLoadoutIndex"),"stats",R.Dict("life",R.I(p,"statLife"),"maxLife",R.I(p,"statLifeMax2",R.I(p,"statLifeMax")),"mana",R.I(p,"statMana"),"maxMana",R.I(p,"statManaMax2",R.I(p,"statManaMax"))),"groups",Inventory(p),"dead",R.B(p,"dead"),"x",(int)(R.D(pos,"X")/16),"y",(int)(R.D(pos,"Y")/16),"flags",new Dictionary<string,object>(),"journey",new Dictionary<string,object>());
       state["player"]=player;state["world"]=R.Dict("name",Convert.ToString(R.Get(m,"worldName","")),"id",R.I(m,"worldID"),"day",R.B(m,"dayTime"),"time",R.D(m,"time"),"raining",R.B(m,"raining"),"hardmode",R.B(m,"hardMode"));
       state["npcs"]=ActiveNpcs();state["townCatalog"]=TownCatalog();
-      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));ExtendSnapshot(state,p);PopulateProgress(state);PopulateResidentConditions(state);PopulateStorageSnapshot(state,p);return state;
+      state["capabilities"]=R.Dict("housing",R.Method(R.T("Terraria.WorldGen"),"MoveTownNPC"),"findHome",R.Method(R.T("Terraria.WorldGen"),"QuickFindHome"));ExtendSnapshot(state,p);PopulateProgress(state);PopulateResidentConditions(state);PopulateStorageSnapshot(state,p);PopulateWarehouseSnapshot(state,p);return state;
     }
   }
 }

@@ -24,7 +24,7 @@ for(const multiplayer of [false,true]){
   }finally{envNames.forEach((k,i)=>{if(previous[i]===undefined)delete process.env[k];else process.env[k]=previous[i];});}
   try{
     const state=await until(async()=>{const s=await live.status();return s.connected&&s.inWorld&&(!multiplayer||s.serverConnected)?s:null;},'QoL bridge did not connect');
-    assert.equal(state.bridgeVersion,'2.2.0');assert.equal(state.worldControl,true);
+    assert.equal(state.bridgeVersion,'2.3.0');assert.equal(state.worldControl,true);
     if(multiplayer){serverPid=Number((await fs.readFile(path.join(game,'server-process.txt'),'utf8')).split('|')[0]);assert.equal(state.netMode,1);}
     async function fixture(action,check=async()=>true,options={}){
       const controls=multiplayer&&options.both?[path.join(game,'fixture-control.txt'),control]:[control];

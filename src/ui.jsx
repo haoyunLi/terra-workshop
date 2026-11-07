@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { X, PackageOpen } from 'lucide-react';
-export function Icon({item,sheets,size=48}){
-  if(!item)return <span className="sprite-wrap" style={{width:size,height:size}}/>;
-  if(item.iconFile)return <span className="sprite-wrap" style={{width:size,height:size}}><img alt="" src={`./${item.iconFile}`} style={{maxWidth:size,maxHeight:size,imageRendering:'pixelated'}}/></span>;
-  if(!item.sprite)return <span className="sprite-wrap no-sprite" title="内部占位物品，游戏未提供可用图标" style={{width:size,height:size}}><PackageOpen size={size*.5}/></span>;
-  const [n,x,y,w,h]=item.sprite,s=sheets[n],scale=Math.min(size/w,size/h,2.5);
-  return <span className="sprite-wrap" style={{width:size,height:size}}><span aria-hidden="true" style={{display:'block',width:w*scale,height:h*scale,backgroundImage:`url("./${s.file}")`,backgroundSize:`${s.w*scale}px ${s.h*scale}px`,backgroundPosition:`-${x*scale}px -${y*scale}px`,imageRendering:'pixelated',flexShrink:0}}/></span>;
+import { resolveIconAsset } from '../core/icon-assets.mjs';
+export function Icon({item,sheets,size=48,label}){
+  const [failedSource,setFailedSource]=useState('');
+  const asset=resolveIconAsset(item,sheets,label),failed=asset.kind==='missing'||failedSource===asset.src;
+  if(failed){const reason=asset.kind==='missing'?asset.reason:'图标资源未能加载';return <span className="sprite-wrap no-sprite" role="img" aria-label={`${asset.label}：${reason}`} title={`${asset.label} · ${reason}`} style={{width:size,height:size}}><PackageOpen size={Math.min(size*.5,28)} aria-hidden="true"/></span>;}
+  const imageProps={src:asset.src,alt:'',draggable:false,decoding:'async',onError:()=>setFailedSource(asset.src)};
+  if(asset.kind==='image')return <span className="sprite-wrap" role="img" aria-label={asset.label} title={asset.label} style={{width:size,height:size}}><img {...imageProps} style={{width:size,height:size,objectFit:'contain',imageRendering:'pixelated',display:'block'}}/></span>;
+  const scale=Math.min(size/asset.width,size/asset.height,2.5);
+  return <span className="sprite-wrap" role="img" aria-label={asset.label} title={asset.label} style={{width:size,height:size,flex:'0 0 auto'}}><span aria-hidden="true" style={{display:'block',position:'relative',overflow:'hidden',width:asset.width*scale,height:asset.height*scale,flex:'0 0 auto'}}><img {...imageProps} style={{position:'absolute',left:-asset.x*scale,top:-asset.y*scale,width:asset.sheetWidth*scale,height:asset.sheetHeight*scale,maxWidth:'none',imageRendering:'pixelated',display:'block'}}/></span></span>;
 }
 export function Modal({title,children,onClose,wide=false}){return <div className="modal-shade" onClick={onClose}><section className={`modal ${wide?'wide':''}`} role="dialog" aria-modal="true" aria-label={title} onClick={e=>e.stopPropagation()}><header><h2>{title}</h2><button className="icon-btn" aria-label="关闭窗口" onClick={onClose}><X size={20}/></button></header>{children}</section></div>;}
 export function Field({label,children,hint}){return <label className="field"><span>{label}</span>{children}{hint?<small>{hint}</small>:null}</label>;}
