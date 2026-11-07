@@ -4,6 +4,7 @@ const fs=require('node:fs');
 const {LiveClient}=require('./connection.cjs');
 const {HotkeyManager}=require('./hotkeys.cjs');
 let window,live,hotkeys,hotkeyState={enabled:false,registered:[],failed:[]};
+let windowPreferences={alwaysOnTop:false};
 app.setName('泰拉工坊');
 if(process.env.TERRA_WORKSHOP_APP_DATA)app.setPath('userData',path.resolve(process.env.TERRA_WORKSHOP_APP_DATA));
 const locked=app.requestSingleInstanceLock();if(!locked)app.quit();
@@ -12,7 +13,11 @@ function trusted(event){if(!window||event.sender!==window.webContents||!event.se
 function startupLog(message){try{const folder=app.getPath('userData');fs.mkdirSync(folder,{recursive:true});fs.appendFileSync(path.join(folder,'app-startup.log'),new Date().toISOString()+' '+message+'\n');}catch{}}
 async function makeWindow(){
   startupLog('Creating desktop window');
-  window=new BrowserWindow({width:1536,height:1024,minWidth:860,minHeight:650,show:false,backgroundColor:'#0e1520',title:'泰拉工坊 2.0 · Terraria 实时修改器',autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
+  try {
+    const saved=JSON.parse(fs.readFileSync(path.join(app.getPath('userData'),'window-preferences.json'),'utf8'));
+    windowPreferences.alwaysOnTop=saved.alwaysOnTop===true;
+  } catch {}
+  window=new BrowserWindow({width:1440,height:960,minWidth:860,minHeight:650,show:false,backgroundColor:'#101a20',title:'泰拉工坊 2.1 · Terraria 实时修改器',icon:path.join(__dirname,'../dist/workshop-icon.png'),alwaysOnTop:windowPreferences.alwaysOnTop,autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'live-preload.cjs'),nodeIntegration:false,contextIsolation:true,sandbox:true}});
   window.once('ready-to-show',()=>window.show());
   live=new LiveClient(app,dialog,window);
   startupLog('Loading local profile');
@@ -31,6 +36,18 @@ async function makeWindow(){
 }
 ipcMain.handle('live:status',async event=>{trusted(event);return live.status();});
 ipcMain.handle('view:ready',async event=>{trusted(event);startupLog('Renderer ready: item catalogue loaded');return true;});
+ipcMain.handle('view:preferences',event=>{trusted(event);return windowPreferences;});
+ipcMain.handle('view:always-on-top',(event,enabled)=>{
+  trusted(event);
+  if(typeof enabled!=='boolean')throw Error('窗口置顶参数无效。');
+  const next={alwaysOnTop:enabled};
+  const file=path.join(app.getPath('userData'),'window-preferences.json');
+  fs.writeFileSync(file+'.tmp',JSON.stringify(next));
+  fs.renameSync(file+'.tmp',file);
+  window.setAlwaysOnTop(enabled);
+  windowPreferences=next;
+  return next;
+});
 ipcMain.handle('live:info',async event=>{trusted(event);return live.detect();});
 ipcMain.handle('live:choose',async event=>{trusted(event);return live.choose();});
 ipcMain.handle('live:launch',async event=>{trusted(event);return live.launch();});

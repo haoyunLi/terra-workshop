@@ -22,23 +22,29 @@ namespace Terraria {
     [MethodImpl(MethodImplOptions.NoInlining)]public void KillMe(){dead=true;}
   }
   public class NPC {
+    public static bool LunarApocalypseIsUp, TowerActiveSolar, TowerActiveVortex, TowerActiveNebula, TowerActiveStardust;
+    public static bool downedTowerSolar, downedTowerVortex, downedTowerNebula, downedTowerStardust, downedMoonlord;
+    public static int ShieldStrengthTowerSolar, ShieldStrengthTowerVortex, ShieldStrengthTowerNebula, ShieldStrengthTowerStardust, MoonLordCountdown;
+    public static int[] spawnSlotProtected = new int[201];
+    public static bool IsSpawnSlotInUse(int index) { return Main.npc[index].active || spawnSlotProtected[index] > 0; }
+    public static int ShieldStrengthTowerMax { get { return downedMoonlord ? 50 : 100; } }
     public int type,whoAmI,homeTileX,homeTileY,life=250,lifeMax=250;public bool active,townNPC,homeless=true,netUpdate,boss;public string GivenName="测试居民";public Vec position;public static int defaultSpawnRate=600,defaultMaxSpawns=5,waveNumber,spawnCounter;
     public string TypeName{get{return type==17?"Merchant":type==22?"Guide":"Other";}}public string FullName{get{return GivenName+" "+TypeName;}}
     public void SetDefaults(int id){type=id;townNPC=id==17||id==22;boss=new[]{50,4,13,266,222,35,668,113,657,125,126,134,127,262,245,370,636,439,398}.Contains(id);}
     public static void SpawnOnPlayer(int player,int type,float a=0,float b=0,float c=0,float d=0){NewNPC(new DataStructures.EntitySource_SpawnNPC(),1600,1600,type);}
     public static void SpawnWOF(Vec position){SpawnOnPlayer(0,113);}
     [MethodImpl(MethodImplOptions.NoInlining)]public static void SpawnNPC(){spawnCounter++;File.WriteAllText(Path.Combine(Main.FixtureRoot,Environment.GetEnvironmentVariable("TERRA_WORKSHOP_ROLE")=="server"?"server-natural-spawns.txt":"natural-spawns.txt"),spawnCounter+"|"+defaultSpawnRate+"|"+defaultMaxSpawns);}
-    public static int NewNPC(DataStructures.EntitySource_SpawnNPC source,int x,int y,int type,int start=0,float ai0=0,float ai1=0,float ai2=0,float ai3=0,int Target=255){for(int n=0;n<Main.npc.Length;n++)if(!Main.npc[n].active){var npc=Main.npc[n];npc.SetDefaults(type);npc.active=true;npc.whoAmI=n;npc.position=new Vec(x,y);return n;}return 200;}
+    public static int NewNPC(DataStructures.EntitySource_SpawnNPC source,int x,int y,int type,int start=0,float ai0=0,float ai1=0,float ai2=0,float ai3=0,int Target=255){for(int n=0;n<Main.maxNPCs;n++)if(!IsSpawnSlotInUse(n)){var npc=Main.npc[n];npc.SetDefaults(type);npc.active=true;npc.whoAmI=n;npc.position=new Vec(x,y);return n;}return 200;}
   }
   public class Main {
-    public static bool gameMenu=false,dayTime=true,raining=false,hardMode=true,bloodMoon,eclipse,pumpkinMoon,snowMoon,slimeRain;public static double time,worldSurface=50;public static int netMode,myPlayer,worldID=98765,maxTilesX=2000,maxTilesY=800,spawnTileX=100,spawnTileY=100,rainTime,invasionType,invasionSize,invasionSizeStart,invasionProgress,invasionProgressWave;public static float maxRaining;
+    public static bool gameMenu=false,dayTime=true,raining=false,hardMode=true,bloodMoon,eclipse,pumpkinMoon,snowMoon,slimeRain;public static double time,worldSurface=50;public static int netMode,myPlayer,maxNPCs=200,worldID=98765,maxTilesX=2000,maxTilesY=800,spawnTileX=100,spawnTileY=100,rainTime,invasionType,invasionSize,invasionSizeStart,invasionProgress,invasionProgressWave;public static float maxRaining;
     public static string FixtureRoot=AppDomain.CurrentDomain.BaseDirectory;
     public static IO.PlayerFileData ActivePlayerFileData=new IO.PlayerFileData(Path.Combine(FixtureRoot,"Saves","fixture.plr"));public static IO.WorldFileData ActiveWorldFileData=new IO.WorldFileData(Path.Combine(FixtureRoot,"Saves","fixture.wld"));
     public static string versionNumber="Terraria 1.4.5.8 [Test Harness]",worldName="自动化测试世界（模拟）";
-    public static Player[] player={new Player()};public static NPC[] npc=Enumerable.Range(0,200).Select(_=>new NPC()).ToArray();
+    public static Player[] player={new Player()};public static NPC[] npc=Enumerable.Range(0,201).Select(_=>new NPC()).ToArray();
     [MethodImpl(MethodImplOptions.NoInlining)]protected void Initialize(){using(var s=Microsoft.Xna.Framework.TitleContainer.OpenStream("Content/PixelShader.xnb")){if(s.ReadByte()!=1)throw new Exception("Shader regression fixture did not load");}}
     [MethodImpl(MethodImplOptions.NoInlining)]protected void LoadContent(){}
-    [MethodImpl(MethodImplOptions.NoInlining)]protected void Update(object gameTime){player[0].statLifeMax2=player[0].statLifeMax;player[0].statManaMax2=player[0].statManaMax;NPC.SpawnNPC();var control=Path.Combine(FixtureRoot,Environment.GetEnvironmentVariable("TERRA_WORKSHOP_ROLE")=="server"?"server-fixture-control.txt":"fixture-control.txt");if(File.Exists(control)){var action=File.ReadAllText(control);File.Delete(control);if(action=="clearBosses")foreach(var n in npc)if(n.boss)n.active=false;if(action=="menu")gameMenu=true;if(action=="world")gameMenu=false;if(action=="hurt")player[0].Hurt();}}
+    [MethodImpl(MethodImplOptions.NoInlining)]protected void Update(object gameTime){player[0].statLifeMax2=player[0].statLifeMax;player[0].statManaMax2=player[0].statManaMax;NPC.SpawnNPC();var control=Path.Combine(FixtureRoot,Environment.GetEnvironmentVariable("TERRA_WORKSHOP_ROLE")=="server"?"server-fixture-control.txt":"fixture-control.txt");if(File.Exists(control)){var action=File.ReadAllText(control);File.Delete(control);if(action=="clearBosses")foreach(var n in npc)if(n.boss)n.active=false;if(action=="menu")gameMenu=true;if(action=="world")gameMenu=false;if(action=="hurt")player[0].Hurt();WorldGen.ApplyFixtureControl(action);}}
     [MethodImpl(MethodImplOptions.NoInlining)]private static void DrawVersionNumber(){}
     [MethodImpl(MethodImplOptions.NoInlining)]protected void Main_Exiting(object sender,EventArgs e){}
     public static void SavePlayers(){}public static void StopRain(){raining=false;}
@@ -52,6 +58,33 @@ namespace Terraria {
     public void Run(){netMode=Environment.GetEnvironmentVariable("TERRA_WORKSHOP_ROLE")=="server"?2:Environment.GetEnvironmentVariable("TERRA_WORKSHOP_TEST_MULTIPLAYER")=="1"?1:0;myPlayer=netMode==2?255:0;Initialize();LoadContent();if(netMode==1&&Environment.GetEnvironmentVariable("TERRA_WORKSHOP_TEST_HOST")=="1"){var process=new Process{StartInfo=new ProcessStartInfo(Path.Combine(FixtureRoot,"TerrariaServer.exe")){UseShellExecute=false,CreateNoWindow=true}};process.Start();File.WriteAllText(Path.Combine(FixtureRoot,"server-process.txt"),process.Id+"|"+process.StartInfo.FileName);}var end=DateTime.UtcNow.AddMinutes(20);while(DateTime.UtcNow<end){Update(null);Thread.Sleep(16);}Main_Exiting(null,EventArgs.Empty);}
   }
   public static class WorldGen {
+    public static void TriggerLunarApocalypse() {
+      int[] types = {517, 422, 507, 493};
+      for (int i = 0; i < types.Length; i++) {
+        int index = NPC.NewNPC(new DataStructures.EntitySource_SpawnNPC(), (i + 1) * 400 * 16, 100 * 16, types[i]);
+        Main.npc[index].life = Main.npc[index].lifeMax = 20000;
+        NetMessage.SendData(23, -1, -1, null, index);
+      }
+      NPC.TowerActiveSolar = NPC.TowerActiveVortex = NPC.TowerActiveNebula = NPC.TowerActiveStardust = NPC.LunarApocalypseIsUp = true;
+      NPC.ShieldStrengthTowerSolar = NPC.ShieldStrengthTowerVortex = NPC.ShieldStrengthTowerNebula = NPC.ShieldStrengthTowerStardust = NPC.ShieldStrengthTowerMax;
+      NetMessage.SendData(101);
+    }
+    public static void ApplyFixtureControl(string action) {
+      if (action == "lunarDamageSolar") { NPC.ShieldStrengthTowerSolar = 0; Main.npc.First(n => n.active && n.type == 517).life = 12345; }
+      if (action == "lunarDefeatSolar") { NPC.TowerActiveSolar = false; NPC.downedTowerSolar = true; Main.npc.First(n => n.active && n.type == 517).active = false; }
+      if (action == "lunarCountdown") {
+        foreach (var npc in Main.npc) if (new[]{517,422,507,493}.Contains(npc.type)) npc.active = false;
+        NPC.TowerActiveSolar = NPC.TowerActiveVortex = NPC.TowerActiveNebula = NPC.TowerActiveStardust = false;
+        NPC.downedTowerSolar = NPC.downedTowerVortex = NPC.downedTowerNebula = NPC.downedTowerStardust = true;
+        NPC.MoonLordCountdown = 3600;
+      }
+      if (action == "lunarComplete") { NPC.MoonLordCountdown = 0; NPC.LunarApocalypseIsUp = false; NPC.downedMoonlord = true; }
+      if (action == "fillNpcSlots") for (int i = 0; i < Main.maxNPCs - 3; i++) { Main.npc[i].SetDefaults(1); Main.npc[i].active = true; }
+      if (action == "protectNpcSlots") for (int i = 0; i < Main.maxNPCs - 3; i++) NPC.spawnSlotProtected[i] = 1;
+      if (action == "clearNpcSlots") { foreach (var npc in Main.npc) npc.active = false; Array.Clear(NPC.spawnSlotProtected, 0, NPC.spawnSlotProtected.Length); }
+      if (action == "normalMode") Main.hardMode = false;
+      if (action == "hardmode") Main.hardMode = true;
+    }
     public static void QuickFindHome(int n){}
     public static bool MoveTownNPC(int x,int y,int n){if(x<90||x>110||y<90||y>110)return false;var npc=Main.npc[n];npc.homeTileX=x;npc.homeTileY=y;npc.homeless=false;return true;}
     public static void saveWorld(bool useCloud=false,bool resetTime=false){}

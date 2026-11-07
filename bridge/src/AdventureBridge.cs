@@ -54,14 +54,14 @@ namespace TerraWorkshop {
     private static void SyncVitals(){Send(16,R.I(MainType,"myPlayer"));Send(42,R.I(MainType,"myPlayer"));}
     private static bool AdventureAction(string action,Dictionary<string,object> args,out object result){result=null;var p=Player();
       if(action=="spawnBoss"){
-        RequireWorldControl();var b=Bosses.FirstOrDefault(x=>x.Key==Text(args,"key"));if(b==null)throw new InvalidOperationException("未知首领。");if(CurrentBosses().Any()||AnyBossType(b.Types))throw new InvalidOperationException("已有首领在战斗中，请结束当前战斗再召唤。");
+        RequireWorldControl();var b=Bosses.FirstOrDefault(x=>x.Key==Text(args,"key"));if(b==null)throw new InvalidOperationException("未知首领。");if(LunarInProgress())throw new InvalidOperationException("天界事件正在进行，请完成四柱与月亮领主挑战后再召唤其他首领。");if(CurrentBosses().Any()||AnyBossType(b.Types))throw new InvalidOperationException("已有首领在战斗中，请结束当前战斗再召唤。");
         var issues=BossRequirements(b,p);bool adjust=Bool(args,"prepareTime")&&b.Night&&R.B(MainType,"dayTime");var blocking=issues.Where(x=>!(adjust&&x=="需要夜晚")).ToList();if(blocking.Count>0)throw new InvalidOperationException(string.Join("，",blocking)+"。可使用传送书签前往对应场地。");if(adjust){R.Set(MainType,"dayTime",false);R.Set(MainType,"time",0.0);Send(7);}
         var npcType=R.T("Terraria.NPC");if(b.Key=="wall")R.Call(npcType,"SpawnWOF",R.Get(p,"position"));else foreach(int type in b.Types)R.Call(npcType,"SpawnOnPlayer",R.I(p,"whoAmI",IsServer?actorIndex:R.I(MainType,"myPlayer")),type);
         if(!AnyBossType(b.Types))throw new InvalidOperationException("游戏没有生成该首领，请检查场地与世界状态。");result=R.Dict("message",b.Name+"已召唤。");return true;
       }
       if(action=="event"){
-        RequireWorldControl();string key=Text(args,"key");if(key=="stop"){EndEvents();result=R.Dict("message","月亮、入侵及史莱姆雨事件已结束；已存在敌怪会按游戏规则离场。");return true;}
-        if(AnyEvent())throw new InvalidOperationException("已有事件正在进行，请先结束当前事件。");
+        RequireWorldControl();string key=Text(args,"key");if(key=="lunar"){result=StartLunarEvent();return true;}if(key=="stop"){EndEvents();result=R.Dict("message","普通月亮事件、入侵及史莱姆雨已结束。");return true;}
+        if(AnyEvent()||LunarInProgress())throw new InvalidOperationException("已有事件正在进行，请先结束当前事件。");
         if(new[]{"pirates","martians","eclipse","pumpkin","frost"}.Contains(key)&&!R.B(MainType,"hardMode"))throw new InvalidOperationException("此事件需要困难模式世界。");
         if(new[]{"bloodMoon","pumpkin","frost"}.Contains(key)){R.Set(MainType,"dayTime",false);R.Set(MainType,"time",0.0);}if(key=="eclipse"){R.Set(MainType,"dayTime",true);R.Set(MainType,"time",0.0);}
         if(key=="bloodMoon")R.Set(MainType,"bloodMoon",true);else if(key=="eclipse")R.Set(MainType,"eclipse",true);else if(key=="pumpkin")R.Call(MainType,"startPumpkinMoon");else if(key=="frost")R.Call(MainType,"startSnowMoon");else if(key=="slimeRain")R.Call(MainType,"StartSlimeRain",true);else {int invasion=key=="goblins"?1:key=="snowLegion"?2:key=="pirates"?3:key=="martians"?4:0;if(invasion==0)throw new InvalidOperationException("未知事件。");R.Call(MainType,"StartInvasion",invasion);}
@@ -86,10 +86,10 @@ namespace TerraWorkshop {
     }
     private static object SaveInfo(string field){try{var data=R.Get(MainType,field);return data==null?null:R.Dict("path",Convert.ToString(R.Get(data,"Path","")),"cloud",R.B(data,"IsCloudSave"));}catch{return null;}}
     private static void ExtendSnapshot(Dictionary<string,object> state,object p){
-      state["bridgeVersion"]="2.0.0";state["bosses"]=CurrentBosses().ToArray();state["bossCatalog"]=Bosses.Select(b=>R.Dict("key",b.Key,"name",b.Name,"types",b.Types,"item",b.Item,"condition",b.Condition,"description",b.Description,"requirements",BossRequirements(b,p).ToArray(),"active",AnyBossType(b.Types))).ToArray();
-      state["events"]=R.Dict("bloodMoon",R.B(MainType,"bloodMoon"),"eclipse",R.B(MainType,"eclipse"),"pumpkin",R.B(MainType,"pumpkinMoon"),"frost",R.B(MainType,"snowMoon"),"slimeRain",R.B(MainType,"slimeRain"),"invasion",R.I(MainType,"invasionType"),"remaining",R.I(MainType,"invasionSize"),"total",R.I(MainType,"invasionSizeStart"),"wave",R.I(R.T("Terraria.NPC"),"waveNumber"));
+      state["bridgeVersion"]="2.1.0";state["bosses"]=CurrentBosses().ToArray();state["bossCatalog"]=Bosses.Select(b=>R.Dict("key",b.Key,"name",b.Name,"types",b.Types,"item",b.Item,"condition",b.Condition,"description",b.Description,"requirements",BossRequirements(b,p).ToArray(),"active",AnyBossType(b.Types))).ToArray();
+      state["events"]=R.Dict("bloodMoon",R.B(MainType,"bloodMoon"),"eclipse",R.B(MainType,"eclipse"),"pumpkin",R.B(MainType,"pumpkinMoon"),"frost",R.B(MainType,"snowMoon"),"slimeRain",R.B(MainType,"slimeRain"),"invasion",R.I(MainType,"invasionType"),"remaining",R.I(MainType,"invasionSize"),"total",R.I(MainType,"invasionSizeStart"),"wave",R.I(R.T("Terraria.NPC"),"waveNumber"),"lunar",LunarSnapshot());
       state["spawns"]=R.Dict("paused",spawnPaused,"rate",spawnRateFactor,"max",spawnMaxFactor);state["saves"]=R.Dict("player",IsServer?null:SaveInfo("ActivePlayerFileData"),"world",R.I(MainType,"netMode")==1?null:SaveInfo("ActiveWorldFileData"));
-      var caps=(Dictionary<string,object>)state["capabilities"];caps["bosses"]=R.Method(R.T("Terraria.NPC"),"SpawnOnPlayer");caps["events"]=R.Method(MainType,"StartInvasion");caps["spawnControl"]=R.Has(R.T("Terraria.NPC"),"defaultSpawnRate");
+      var caps=(Dictionary<string,object>)state["capabilities"];caps["bosses"]=R.Method(R.T("Terraria.NPC"),"SpawnOnPlayer");caps["events"]=R.Method(MainType,"StartInvasion");caps["lunarEvents"]=LunarSupported();caps["spawnControl"]=R.Has(R.T("Terraria.NPC"),"defaultSpawnRate");
     }
   }
 }

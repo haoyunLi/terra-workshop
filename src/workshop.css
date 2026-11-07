@@ -1,0 +1,315 @@
+.workshop-v21 {
+  --bg: #10171b;
+  --surface: #182127;
+  --raised: #202d34;
+  --line: #2d3c44;
+  --muted: #91a4ad;
+  --mint: #94e1bf;
+  --mint-dark: #14342d;
+  color: #e8ede9;
+  background: var(--bg);
+  grid-template-columns: 218px minmax(0, 1fr);
+  font-size: 13px;
+}
+.workshop-v21 button {border-color: #35454c; border-radius: 8px; background: #1c292f; color: #d6e0df; font-size: 12px;}
+.workshop-v21 button:hover:not(:disabled) {background: #293a40; border-color: #5d7c7b;}
+.workshop-v21 button.primary {background: var(--mint); border-color: var(--mint); color: #12382d;}
+.workshop-v21 button.primary:hover:not(:disabled) {background: #b5efd5; border-color: #b5efd5;}
+.workshop-v21 button:disabled {opacity: .42;}
+.workshop-v21 input, .workshop-v21 select {background: #142026; border-color: #35454c; color: #e0e7e5; border-radius: 7px;}
+.workshop-v21 input:focus, .workshop-v21 select:focus {border-color: var(--mint);}
+.workshop-v21 .sidebar {background: #141d22; border-color: #2a373d;}
+.workshop-v21 .brand {height: 105px; padding: 0 22px; gap: 11px;}
+.workshop-v21 .brand img.brand-mark {height: 44px; width: 44px; image-rendering: auto; transform: none; filter: none;}
+.workshop-v21 .brand strong {font-size: 21px; letter-spacing: 1px;}
+.workshop-v21 .brand span {font-size: 8px; letter-spacing: 1.8px; color: #91a6a8; margin-top: 6px;}
+.workshop-v21 .sidebar nav {padding: 0 12px; gap: 0; min-height: 0; overflow-y: auto; flex: 1;}
+.workshop-v21 .nav-group {margin-bottom: 22px;}
+.workshop-v21 .nav-group-label {display: block; padding: 0 15px; margin-bottom: 9px; color: #768d94; font-size: 10px; letter-spacing: 1.5px;}
+.workshop-v21 .sidebar nav button {width: 100%; padding: 11px 13px; margin: 3px 0; border: 1px solid transparent; color: #a3b5b9; gap: 12px; font-size: 12px; border-radius: 8px; background: transparent;}
+.workshop-v21 .sidebar nav button svg {width: 18px; stroke-width: 1.6;}
+.workshop-v21 .sidebar nav button.selected {background: #244138; border-color: #37594a; color: #c8f2dc;}
+.workshop-v21 .sidebar nav button.selected svg {color: #a1e6c3;}
+.workshop-v21 .sidebar nav button:hover {background: #223238;}
+.workshop-v21 .nav-new {margin-left: auto; font: 600 8px system-ui; letter-spacing: .7px; color: #e6bc8c; border: 1px solid #674d34; border-radius: 4px; padding: 3px 4px;}
+.workshop-v21 .sidebar-bottom {padding: 15px 23px 19px; border-color: #28363b; font-size: 10px; color: #6f9090;}
+.workshop-v21 .sidebar-bottom button {font-size: 10px; margin: 0 0 15px; color: #a1b2b6; background: none; border: 0;}
+.workshop-v21 .edition-stamp {justify-content: space-between; margin-bottom: 23px; color: #8da0a4;}
+.workshop-v21 .edition-stamp b {font: 500 10px system-ui; border: 1px solid #435044; border-radius: 4px; padding: 3px 6px; color: #d6be97;}
+.workshop-v21 .app-header {height: 112px; padding: 22px 28px 19px; gap: 16px;}
+.workshop-v21 .eyebrow {display: block; font: 600 9px system-ui; letter-spacing: 2px; color: #9cb2b2;}
+.workshop-v21 .eyebrow > span {padding: 0 8px; color: #4d676b;}
+.workshop-v21 .app-header h1 {font-size: 25px; letter-spacing: .5px; margin-top: 7px;}
+.workshop-v21 .app-header p {font-size: 11px; color: #93a7ae; margin-top: 7px;}
+.workshop-v21 .header-actions {gap: 8px;}
+.workshop-v21 .header-actions > button {height: 38px; padding: 0 13px; font-size: 11px; gap: 7px;}
+.workshop-v21 .history-controls {display: flex; border-right: 1px solid #344349; padding-right: 8px; margin-right: 2px;}
+.workshop-v21 .history-controls button {padding: 8px; border: 0; background: transparent;}
+.workshop-v21 .window-pin.is-pinned {color: #b0e7cb; border-color: #668775; background: #29443a;}
+.workshop-v21 .import-banner {margin: 0 24px 17px; border: 1px solid #354349; background: #19272d; border-radius: 9px; padding: 12px 16px; min-height: 63px; gap: 13px;}
+.workshop-v21 .banner-icon {color: #c6b28b; background: #36362c; border-radius: 8px; padding: 9px; display: flex;}
+.workshop-v21 .banner-icon svg {width: 19px; height: 19px;}
+.workshop-v21 .import-banner strong {font-size: 12px; letter-spacing: 0;}
+.workshop-v21 .import-banner p {font-size: 10px; color: #96abb1; margin-top: 4px;}
+.workshop-v21 .import-banner button {font-size: 10px; padding: 8px 11px; background: transparent; border-color: #40545b;}
+.workshop-v21 .import-banner button svg {width: 15px;}
+.workshop-v21 .import-banner.loaded {border-color: #365346; background: #1b2d2b;}
+.workshop-v21 .import-banner.loaded .banner-icon {background: #2b4940; color: #a7e2c2;}
+.workshop-v21 .page-content {padding: 0 24px 14px;}
+.workshop-v21 .quickbar {margin: 0 24px 14px; background: #1a2c29; border-color: #365146;}
+.workshop-v21 .quickbar button {background: #253d34; border-color: #456150; color: #b9dfc9;}
+.workshop-v21 .statusbar {padding: 9px 25px; border-color: #28373d; background: #121c20; color: #819a9e; font-size: 9px;}
+.workshop-v21 .statusbar > span {gap: 7px;}
+.workshop-v21 .workspace {gap: 18px; grid-template-columns: minmax(0, 1fr) 320px;}
+.workshop-v21 .catalog-panel {border: 0; background: transparent; border-radius: 0; padding: 0;}
+.workshop-v21 .collection-heading {display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 19px; padding: 3px 1px 0; flex-shrink: 0;}
+.workshop-v21 .collection-heading .eyebrow {font-size: 8px; color: #a69f89; letter-spacing: 1.8px;}
+.workshop-v21 .collection-heading h2 {font-size: 19px; font-weight: 600; letter-spacing: .3px; margin-top: 7px;}
+.workshop-v21 .collection-count {font: 600 15px system-ui; display: flex; align-items: center; gap: 7px; color: #a8c4b7;}
+.workshop-v21 .collection-count small {font: 9px 'Microsoft YaHei UI',sans-serif; color: #7e969d;}
+.workshop-v21 .search {height: 45px; border: 1px solid #3a4c52; background: #1a282f; border-radius: 9px; color: #8ba9ab;}
+.workshop-v21 .search input {border: 0; background: none; font-size: 12px; padding: 0; border-radius: 0;}
+.workshop-v21 .search input::placeholder {color: #81999f;}
+.workshop-v21 .search:focus-within {border-color: var(--mint);}
+.workshop-v21 .search kbd {background: #23343a; border-color: #475a60; color: #b8ccc8;}
+.workshop-v21 .collection-shortcuts {display: flex; gap: 19px; margin: 15px 0 13px; border-bottom: 1px solid #2c3c42;}
+.workshop-v21 .collection-shortcuts button {border: 0; border-radius: 0; border-bottom: 2px solid transparent; background: none; padding: 0 1px 12px; color: #8da3aa; font-size: 11px; gap: 6px;}
+.workshop-v21 .collection-shortcuts button.active {color: #b5eace; border-bottom-color: #94d7b5;}
+.workshop-v21 .collection-shortcuts button span {background: #2a3a3b; color: #abc3bc; border-radius: 4px; padding: 1px 5px; font-size: 9px;}
+.workshop-v21 .category-tabs {margin: 0; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px;}
+.workshop-v21 .category-tabs button, .workshop-v21 .category-tabs select {flex: 1 0 auto; width: auto; padding: 7px 9px; font-size: 10px; border-radius: 5px; border-color: transparent; background: #1c2a30; color: #9fb4b7;}
+.workshop-v21 .category-tabs button.active {background: #d1bf98; color: #342d20; border-color: #d1bf98;}
+.workshop-v21 .category-tabs select {flex: 0 0 53px; padding: 6px;}
+.workshop-v21 .catalog-toolbar {border: 0; padding: 15px 0 12px; flex-direction: row; align-items: center; gap: 8px;}
+.workshop-v21 .catalog-toolbar > div:first-child {gap: 8px;}
+.workshop-v21 .catalog-toolbar strong {font-size: 12px; font-weight: 500; color: #b9c8c8;}
+.workshop-v21 .catalog-toolbar > div > span {font-size: 10px; color: #718c95;}
+.workshop-v21 .view-controls {width: auto; gap: 4px;}
+.workshop-v21 .view-controls select {font-size: 10px; padding: 5px 3px; background: transparent; border: 0; max-width: 83px; color: #97adb3;}
+.workshop-v21 .view-controls button {padding: 5px; border-color: #2d424b; background: transparent; border-radius: 5px;}
+.workshop-v21 .view-controls button.active {background: #2b4941; border-color: #4c6c5e; color: #b3ddc5;}
+.workshop-v21 .item-grid {grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); grid-auto-rows: 144px; gap: 10px; padding-right: 4px;}
+.workshop-v21 .item-tile {min-height: 0; background: #1a262d; border: 1px solid #2c3b43; border-radius: 10px;}
+.workshop-v21 .item-tile.selected {border: 1px solid #88c8ac; background: #263d37; box-shadow: inset 0 0 0 1px #88c8ac22;}
+.workshop-v21 .item-select, .workshop-v21 .item-tile.selected .item-select {padding: 14px 7px 12px; gap: 8px; border: 0; border-radius: 0; background: none;}
+.workshop-v21 .item-select:hover:not(:disabled) {background: #2d414133;}
+.workshop-v21 .item-select > .sprite-wrap {filter: drop-shadow(0 5px 5px #0006);}
+.workshop-v21 .tile-name {font-size: 11px; color: #dce3e0;}
+.workshop-v21 .tile-id {font-size: 9px; color: #7b959e; display: inline-flex; gap: 7px; align-items: center;}
+.workshop-v21 .tile-id em {font-size: 9px; margin: 0; display: inline-flex; align-items: center; gap: 2px; color: #a1d5b5;}
+.workshop-v21 .tile-rarity {position: absolute; top: 12px; left: 10px; width: 4px; height: 4px; border-radius: 50%; background: var(--rarity); opacity: .7; pointer-events: none;}
+.workshop-v21 .favorite-btn {top: 6px; right: 5px; padding: 4px; border: 0; background: none; color: #829a9a;}
+.workshop-v21 .favorite-btn.is-favorite {color: #d9bc80;}
+.workshop-v21 .pagination {padding-top: 12px; color: #829ba4; font-size: 10px;}
+.workshop-v21 .pagination button {padding: 4px; background: #192930; border-color: #30434b;}
+.workshop-v21 .list-view {display: flex;}
+.workshop-v21 .list-view .item-tile {min-height: 58px;}
+.workshop-v21 .list-view .item-select {display: grid; grid-template-columns: 42px 1fr 110px; padding: 9px 15px; gap: 10px; text-align: left;}
+.workshop-v21 .list-view .tile-rarity {top: 26px; left: 6px;}
+.workshop-v21 .list-view .favorite-btn {top: 17px;}
+.workshop-v21 .inspector {background: #19242a; border: 1px solid #35444a; border-radius: 13px;}
+.workshop-v21 .inspector-label {height: 39px; display: flex; align-items: center; gap: 6px; padding: 0 18px; border-bottom: 1px solid #2d3e43; color: #a4bbb7; font-size: 10px;}
+.workshop-v21 .inspector-label > span:last-child {margin-left: auto; color: #7e959e; font: 10px system-ui;}
+.workshop-v21 .item-hero {padding: 19px 0 17px; margin: 0 18px; border-bottom: 1px solid #34434a;}
+.workshop-v21 .item-display {width: 104px; height: 104px; display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 26px; background: radial-gradient(ellipse, color-mix(in srgb, var(--rarity) 13%, transparent), #1c2c3200 75%);}
+.workshop-v21 .item-display .sprite-wrap {filter: drop-shadow(0 7px 10px #0007);}
+.workshop-v21 .item-hero h2 {font-size: 22px; margin: 8px 0 4px; font-weight: 600; letter-spacing: .7px;}
+.workshop-v21 .item-hero p {font-size: 11px; color: #829ca7; margin: 0 0 13px;}
+.workshop-v21 .item-badges {display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;}
+.workshop-v21 .item-badges span {font-size: 9px; font-weight: 400; padding: 4px 7px; background: #24353b; border: 1px solid #35464d; border-radius: 5px; color: #afc1c1;}
+.workshop-v21 .inspector-edit {padding: 18px;}
+.workshop-v21 .quantity-row {grid-template-columns: 68px 1fr; gap: 10px;}
+.workshop-v21 .quantity-row > label {font-size: 11px; color: #b2c3c4;}
+.workshop-v21 .stepper {grid-template-columns: 33px 1fr 33px; height: 36px; border-color: #47605f; border-radius: 7px;}
+.workshop-v21 .stepper button {padding: 0; border: 0; border-radius: 0; background: #253a3b;}
+.workshop-v21 .stepper input {background: #14272b; border: 0; border-radius: 0; font: 600 14px system-ui; padding: 0; text-align: center;}
+.workshop-v21 .quantity-presets {display: flex; gap: 5px; margin: 8px 0 18px 78px;}
+.workshop-v21 .quantity-presets button {flex: 1; padding: 5px 3px; border-color: #34474d; background: #1b2c33; color: #8ba5ad; font-size: 9px; border-radius: 4px;}
+.workshop-v21 .quantity-presets button.active {color: #d1ddbe; background: #344438; border-color: #596a4c;}
+.workshop-v21 .item-edit-fields {display: grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+.workshop-v21 .inspector-edit .field {display: flex; flex-direction: column; align-items: stretch; gap: 7px; margin: 0;}
+.workshop-v21 .inspector-edit .field > span {font-size: 10px; color: #93a9ad;}
+.workshop-v21 .inspector-edit .field select {font-size: 11px; padding: 8px;}
+.workshop-v21 .inspector-edit .check-line {font-size: 10px; color: #839fa5; margin: 15px 0;}
+.workshop-v21 .add-button {height: 41px; margin: 0; font-size: 12px; letter-spacing: .3px; gap: 6px;}
+.workshop-v21 .add-button > svg:last-child {margin-left: auto;}
+.workshop-v21 .add-button > svg:first-child {margin-right: auto;}
+.workshop-v21 .pin-item-button {padding: 9px; margin-top: 8px; color: #a6bdb7; background: transparent; border-color: #3a504e; font-size: 10px;}
+.workshop-v21 .owned-line {font-size: 10px; align-items: center; margin: 12px 0 0;}
+.workshop-v21 .owned-line > span {display: flex; align-items: center; gap: 4px; color: #9bbaaa;}
+.workshop-v21 .owned-line button {padding: 4px; font-size: 9px; border: 0; background: none; color: #b1938a;}
+.workshop-v21 .helper {font-size: 9px; color: #79979f; margin-top: 11px;}
+.workshop-v21 .inline-item-intro {border: 0; border-left: 2px solid #6a7160; background: #233136; border-radius: 0 6px 6px 0; font-size: 10px; color: #a5b6b5; line-height: 1.9; padding: 9px 11px; margin: 15px 0 0;}
+.workshop-v21 .detail-tabs {border-color: #35444a; margin: 0 18px; gap: 17px;}
+.workshop-v21 .detail-tabs button {font-size: 10px; padding: 10px 2px; border-radius: 0; border: 0; border-bottom: 2px solid transparent; background: none; color: #94aaad;}
+.workshop-v21 .detail-tabs button.active {color: #c0dfc9; border-bottom-color: #9acbaa;}
+.workshop-v21 .item-description {padding: 14px 18px 20px; font-size: 11px; color: #a3b7bb;}
+.workshop-v21 .item-description dl > div {padding: 8px 0; border-color: #2c3e45;}
+.workshop-v21 .item-description dt {color: #819ca3;}
+.workshop-v21 .item-description dd {color: #cfddd9;}
+.workshop-v21 .item-description > small {font-size: 9px; color: #7b949e; line-height: 1.7;}
+.workshop-v21 .recipe {border-bottom: 1px solid #34464d; padding-bottom: 15px; margin-bottom: 15px;}
+.workshop-v21 .recipe .recipe-heading {display: flex; justify-content: space-between; gap: 8px; margin-bottom: 9px;}
+.workshop-v21 .recipe-heading strong {font-size: 11px;}
+.workshop-v21 .recipe-heading > span {font-size: 9px;}
+.workshop-v21 .recipe .recipe-ingredient {display: flex; align-items: center; gap: 8px; margin: 7px 0;}
+.workshop-v21 .recipe-ingredient > div {flex: 1; min-width: 0;}
+.workshop-v21 .recipe-ingredient > div > span {font-size: 10px;}
+.workshop-v21 .recipe-ingredient small {display: block; font-size: 9px; color: #7f9a9e; margin-top: 3px;}
+.workshop-v21 .recipe-ingredient b {font-size: 10px; font-weight: 500;}
+.workshop-v21 .recipe-ingredient select {font-size: 10px; padding: 5px;}
+.workshop-v21 .recipe > small {display: block; color: #93a9a9; font-size: 9px; line-height: 1.8;}
+.workshop-v21 .recipe-supply {width: 100%; margin: 11px 0 8px; font-size: 10px; border-color: #57705c; color: #b8d9b6; background: #2a3b30;}
+.workshop-v21 .recipe .recipe-note {font-size: 8px; color: #768d95;}
+.workshop-v21 .page-panel {border: 1px solid #2e4147; border-radius: 12px; background: #17232a; padding: 25px;}
+.workshop-v21 .page-title {margin-bottom: 25px;}
+.workshop-v21 .page-title h2 {font-size: 21px; color: #d9e4dc;}
+.workshop-v21 .page-title p {font-size: 11px; line-height: 1.9; color: #8ea7ae;}
+.workshop-v21 .adventure-tabs {gap: 24px; border-color: #34464c;}
+.workshop-v21 .adventure-tabs button {background: none; border-radius: 0; font-size: 12px; color: #91a9af;}
+.workshop-v21 .adventure-tabs button.active {color: #b4e4c6; border-bottom-color: #b4e4c6;}
+.workshop-v21 .adventure-card {background: #1c2b31; border-color: #34494e; border-radius: 12px; padding: 21px; gap: 18px;}
+.workshop-v21 .card-heading h3 {font-size: 15px; color: #dbe5df;}
+.workshop-v21 .card-heading p {color: #8ca5ac; font-size: 10px;}
+.workshop-v21 .card-description {color: #a2b8b9; font-size: 11px;}
+.workshop-v21 .card-bottom {border-color: #34484d;}
+.workshop-v21 .card-bottom button {font-size: 11px;}
+.workshop-v21 .notice {background: #252e2c; border-color: #4a5142; color: #b2b8a4; border-radius: 8px; font-size: 10px; line-height: 1.9;}
+.workshop-v21 .modal {background: #1b282e; border-color: #4c6267; border-radius: 15px;}
+.workshop-v21 .modal > header h2 {font-size: 19px;}
+.workshop-v21 .toast {background: #233d33; border-color: #5c856d; color: #d2e7d8; border-radius: 10px;}
+.workshop-v21 .settings-line, .workshop-v21 .preset-card, .workshop-v21 .bookmark-row {background: #203137; border-color: #3a5055; border-radius: 10px;}
+.workshop-v21 .quick-row {background: #1e3035; border-color: #374f54;}
+.workshop-v21 .lunar-overview {display: flex; justify-content: space-between; align-items: center; gap: 25px; padding: 25px; border: 1px solid #505f60; border-radius: 12px; background: linear-gradient(115deg,#263c3e,#292c3c); margin-bottom: 22px;}
+.workshop-v21 .lunar-overview h3 {font-size: 21px; font-weight: 500; margin: 9px 0 10px; color: #e4e9dd;}
+.workshop-v21 .lunar-overview p {font-size: 11px; color: #a8bfc2; line-height: 1.9; max-width: 620px;}
+.workshop-v21 .lunar-overview button {flex-shrink: 0;}
+.workshop-v21 .lunar-grid {display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; margin-bottom: 21px;}
+.workshop-v21 .pillar-card {--pillar: #ddae7d; border: 1px solid color-mix(in srgb,var(--pillar) 38%,#2a3b45); border-radius: 12px; overflow: hidden; background: #1a2931;}
+.workshop-v21 .pillar-card.pillar-vortex {--pillar: #78dbc8;}
+.workshop-v21 .pillar-card.pillar-nebula {--pillar: #d397dd;}
+.workshop-v21 .pillar-card.pillar-stardust {--pillar: #8ec6e9;}
+.workshop-v21 .pillar-art {position: relative; height: 135px; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 50% 100%,color-mix(in srgb,var(--pillar) 14%,transparent),transparent 80%); overflow: hidden;}
+.workshop-v21 .pillar-art::after {content: ''; position: absolute; border: 1px solid color-mix(in srgb,var(--pillar) 18%,transparent); border-radius: 50%; width: 150px; height: 150px; top: 23px;}
+.workshop-v21 .pillar-sigil {color: var(--pillar); width: 70px; height: 100px; filter: drop-shadow(0 0 15px color-mix(in srgb,var(--pillar) 20%,transparent));}
+.workshop-v21 .pillar-fragment {position: absolute; top: 10px; right: 10px; opacity: .8;}
+.workshop-v21 .pillar-content {padding: 16px;}
+.workshop-v21 .pillar-heading {display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px;}
+.workshop-v21 .pillar-heading h3 {font-size: 16px; color: #d9e3e3;}
+.workshop-v21 .pillar-heading span {font-size: 9px; color: var(--pillar);}
+.workshop-v21 .pillar-content > p {font-size: 10px; color: #8da4ae; margin-bottom: 18px;}
+.workshop-v21 .pillar-content > .pillar-position {font-size: 9px; color: #7f9ba4; margin: 14px 0 0;}
+.workshop-v21 .pillar-meter {margin: 12px 0;}
+.workshop-v21 .pillar-meter > div {display: flex; justify-content: space-between; gap: 7px; font-size: 9px; margin-bottom: 7px; color: #a6b9bb;}
+.workshop-v21 .pillar-meter strong {font: 10px system-ui; color: #c8dad7;}
+.workshop-v21 .pillar-track {height: 4px; background: #304047; border-radius: 5px; overflow: hidden;}
+.workshop-v21 .pillar-track i {display: block; height: 100%; background: var(--pillar); transition: width .25s;}
+.workshop-v21 .pillar-content > button {width: 100%; margin-top: 10px; border-color: #486268; background: #22363c; font-size: 10px; padding: 8px;}
+.workshop-v21 .lunar-countdown {padding: 20px; margin-bottom: 18px; border: 1px solid #7a668c; background: #343048; border-radius: 10px; display: flex; align-items: center; gap: 13px; color: #d0b9e4;}
+.workshop-v21 .lunar-countdown strong {font: 500 27px system-ui; color: #e6d9ef; margin-left: auto;}
+.workshop-v21 .lunar-countdown p {font-size: 10px; color: #b4a8c5; margin-top: 7px;}
+.workshop-v21 ::-webkit-scrollbar {width: 5px; height: 5px;}
+.workshop-v21 ::-webkit-scrollbar-thumb {background: #425b60; border-radius: 5px;}
+.workshop-v21 ::-webkit-scrollbar-track {background: transparent;}
+@media(min-width:1600px) {
+  .workshop-v21 {grid-template-columns: 238px minmax(0,1fr);}
+  .workshop-v21 .workspace {grid-template-columns: minmax(0,1fr) 350px; gap: 22px;}
+  .workshop-v21 .item-grid {grid-template-columns: repeat(auto-fill,minmax(130px,1fr)); grid-auto-rows: 155px;}
+  .workshop-v21 .tile-name {font-size: 12px;}
+}
+@media(max-width:1250px) {
+  .workshop-v21 {grid-template-columns: 185px minmax(0,1fr);}
+  .workshop-v21 .brand {padding: 0 14px; gap: 8px;}
+  .workshop-v21 .brand strong {font-size: 19px;}
+  .workshop-v21 .brand img.brand-mark {width: 38px; height: 38px;}
+  .workshop-v21 .brand span {font-size: 7px; letter-spacing: 1.3px;}
+  .workshop-v21 .nav-new {display: none;}
+  .workshop-v21 .sidebar nav {padding: 0 9px;}
+  .workshop-v21 .sidebar nav button {font-size: 11px; padding: 11px; gap: 9px;}
+  .workshop-v21 .workspace {grid-template-columns: minmax(0,1fr) 290px; gap: 14px;}
+  .workshop-v21 .app-header {padding-left: 20px; padding-right: 20px;}
+  .workshop-v21 .header-actions {gap: 6px;}
+  .workshop-v21 .history-controls {display: flex;}
+  .workshop-v21 .header-actions > button {padding: 0 10px;}
+  .workshop-v21 .page-content {padding-left: 20px; padding-right: 20px;}
+  .workshop-v21 .import-banner,.workshop-v21 .quickbar {margin-left: 20px; margin-right: 20px;}
+  .workshop-v21 .collection-count small {display: none;}
+  .workshop-v21 .catalog-toolbar {align-items: flex-start; flex-wrap: wrap; gap: 8px;}
+  .workshop-v21 .lunar-grid {grid-template-columns: repeat(2,minmax(0,1fr));}
+}
+@media(max-width:1000px) {
+  .workshop-v21 {grid-template-columns: 68px minmax(0,1fr);}
+  .workshop-v21 .brand {justify-content: center; padding: 0; height: 86px;}
+  .workshop-v21 .brand > div,.workshop-v21 .nav-group-label,.workshop-v21 .sidebar nav button > span,.workshop-v21 .edition-stamp {display: none;}
+  .workshop-v21 .nav-group {margin-bottom: 13px; padding-bottom: 10px; border-bottom: 1px solid #2b3d43;}
+  .workshop-v21 .sidebar nav button {padding: 12px; justify-content: center;}
+  .workshop-v21 .sidebar-bottom {padding: 14px;}
+  .workshop-v21 .sidebar-bottom span {display: none;}
+  .workshop-v21 .header-actions .window-pin span {display: none;}
+  .workshop-v21 .collection-heading h2 {font-size: 17px;}
+  .workshop-v21 .item-grid {grid-template-columns: repeat(auto-fill,minmax(100px,1fr)); grid-auto-rows: 138px; gap: 8px;}
+  .workshop-v21 .lunar-overview {align-items: flex-start; flex-direction: column; gap: 18px;}
+}
+@media(max-width:760px) {
+  .workshop-v21 {display: block; height: auto; overflow: visible;}
+  .workshop-v21 .sidebar {height: auto; flex-direction: row; padding: 7px 10px; border-bottom: 1px solid #30444b;}
+  .workshop-v21 .brand {height: 40px; padding-right: 9px;}
+  .workshop-v21 .brand img.brand-mark {width: 33px; height: 33px;}
+  .workshop-v21 .sidebar nav {flex-direction: row; overflow-x: auto; padding: 0; justify-content: flex-start; gap: 2px;}
+  .workshop-v21 .nav-group {display: flex; flex-shrink: 0; margin: 0; padding: 0; border: 0; gap: 2px;}
+  .workshop-v21 .sidebar nav button {width: auto; padding: 10px; margin: 0;}
+  .workshop-v21 .sidebar-bottom {display: none;}
+  .workshop-v21 .app-header {height: auto; padding: 22px 15px 17px; flex-wrap: wrap; gap: 17px;}
+  .workshop-v21 .app-header > div:first-child {flex: 1;}
+  .workshop-v21 .app-header h1 {font-size: 23px;}
+  .workshop-v21 .app-header p {font-size: 10px; max-width: none;}
+  .workshop-v21 .header-actions {width: 100%; justify-content: flex-end;}
+  .workshop-v21 .history-controls {display: flex; margin-right: auto;}
+  .workshop-v21 .header-actions > button {height: 34px; font-size: 10px;}
+  .workshop-v21 .header-actions .window-pin span {display: inline;}
+  .workshop-v21 .header-actions > button:first-of-type span {display: inline;}
+  .workshop-v21 .header-actions > button[aria-label="游戏连接"] span {display: none;}
+  .workshop-v21 .import-banner {margin: 0 13px 17px; padding: 11px; gap: 10px;}
+  .workshop-v21 .import-banner strong {font-size: 11px; line-height: 1.7;}
+  .workshop-v21 .import-banner p {font-size: 9px;}
+  .workshop-v21 .import-banner button {padding: 7px; font-size: 9px;}
+  .workshop-v21 .banner-icon {display: none;}
+  .workshop-v21 .page-content {padding: 0 13px 14px; overflow: visible;}
+  .workshop-v21 .quickbar {margin: 0 13px 13px;}
+  .workshop-v21 .workspace {grid-template-columns: minmax(0,1fr); gap: 17px; height: auto;}
+  .workshop-v21 .catalog-panel {height: 720px; max-height: 95vh;}
+  .workshop-v21 .collection-heading {margin-bottom: 15px;}
+  .workshop-v21 .collection-heading h2 {font-size: 19px;}
+  .workshop-v21 .collection-count {font-size: 13px;}
+  .workshop-v21 .collection-shortcuts {gap: 22px;}
+  .workshop-v21 .category-tabs {gap: 5px;}
+  .workshop-v21 .category-tabs button {padding: 7px 10px; flex: 0 0 auto;}
+  .workshop-v21 .catalog-toolbar {flex-wrap: nowrap; align-items: center; padding: 13px 0;}
+  .workshop-v21 .view-controls select {max-width: 75px; font-size: 9px;}
+  .workshop-v21 .item-grid {grid-template-columns: repeat(3,minmax(0,1fr)); grid-auto-rows: 138px; gap: 7px;}
+  .workshop-v21 .item-select > .sprite-wrap {width: 60px!important; height: 60px!important;}
+  .workshop-v21 .tile-name {font-size: 10px;}
+  .workshop-v21 .favorite-btn {opacity: .8;}
+  .workshop-v21 .inspector {height: auto; overflow: visible;}
+  .workshop-v21 .item-hero .sprite-wrap {width: 88px!important; height: 88px!important;}
+  .workshop-v21 .inspector-edit {max-width: none;}
+  .workshop-v21 .list-view .item-select {grid-template-columns: 38px 1fr 85px; gap: 7px;}
+  .workshop-v21 .list-view .item-select > .sprite-wrap {width: 36px!important; height: 36px!important;}
+  .workshop-v21 .list-view .tile-id em {display: inline-flex;}
+  .workshop-v21 .statusbar {padding: 10px 14px; font-size: 8px;}
+  .workshop-v21 .statusbar > span:last-child {display: none;}
+  .workshop-v21 .page-panel {padding: 17px; height: auto;}
+  .workshop-v21 .page-title h2 {font-size: 19px;}
+  .workshop-v21 .adventure-tabs {gap: 16px; overflow-x: auto;}
+  .workshop-v21 .adventure-tabs button {font-size: 10px; flex-shrink: 0; gap: 5px;}
+  .workshop-v21 .lunar-overview {padding: 18px;}
+  .workshop-v21 .lunar-overview h3 {font-size: 19px;}
+  .workshop-v21 .lunar-overview p {font-size: 10px;}
+  .workshop-v21 .lunar-grid {gap: 10px;}
+  .workshop-v21 .pillar-content {padding: 12px;}
+  .workshop-v21 .pillar-heading {flex-direction: column; gap: 5px;}
+  .workshop-v21 .pillar-heading h3 {font-size: 14px;}
+  .workshop-v21 .pillar-art {height: 112px;}
+  .workshop-v21 .pillar-sigil {height: 85px;}
+  .workshop-v21 .pillar-content > button {font-size: 9px; gap: 5px;}
+}
